@@ -300,6 +300,7 @@ namespace Kolejki_LAB3
                 if (servicePlace.CurrentCar.Equals(car))
                 {
                     servicePlace.CurrentCar = null;
+                    break;
                 }
             }
 

@@ -518,13 +518,16 @@ namespace Kolejki_LAB3
             int time = actualComunicate.oComunicateCar.PlannedWaitingTime + actualComunicate.iComunicateTime;
 
             // usuwa zadanie z maszyny
-            _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar);
+            //_formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar);
             // generuje komunikat
             _formQueueSystemsController.addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
         }
 
         public void handleServicePlaceFinishedComunicate(Comunicates actualComunicate)
         {
+            // usuwa zadanie z maszyny
+            _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar);
+
             // sprawdź wszystkie możliwe wyjścia z maszyny
             List<InputOutput> outputCarWashes = actualComunicate.oComunicateCarWash.getOutputs();
             /*
