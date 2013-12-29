@@ -162,7 +162,8 @@ namespace Kolejki_LAB3
         /// <param name="e"></param>
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            listBoxComunicates.Items.Clear();
+            //listBoxComunicates.Items.Clear();
+            listBoxComunicates.DataSource = null;
         }
 
         private void backgroundWorkerUpdateInterface_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
@@ -308,8 +309,8 @@ namespace Kolejki_LAB3
             //}
 
 
-            while (true)
-            {
+            //while (true)
+            //{
                 if (!Comunicates.checkComunicateINExists())
                 {
                     _formQueueSystemsController.generateNewCar();
@@ -317,15 +318,15 @@ namespace Kolejki_LAB3
 
                 handleComunicate();
 
-                if (_formQueueSystemsController.iActualTime > 5000)
-                    break;
+                //if (_formQueueSystemsController.iActualTime > 5000)
+                    //break;
 
-                Console.WriteLine("New loop");
 
                 // sortuj
-                //listBoxComunicates.DataSource = QueueSystem.comunicates;
-                //listBoxComunicates.DisplayMember = "sComunicateContent";
-            }
+                listBoxComunicates.DataSource = null;
+                listBoxComunicates.DataSource = QueueSystem.comunicatesUsed;
+                listBoxComunicates.DisplayMember = "sComunicateContent";
+            //}
         }
 
         public void DrawRelations(CarWash carWash)
@@ -475,6 +476,9 @@ namespace Kolejki_LAB3
                 case "ADDED_TO_SERVICE_PLACE":
                     handleAddedToServicePlaceComunicate(actualComunicate);
                     break;
+                case "SERVICE_PLACE_FINISHED":
+                    handleServicePlaceFinishedComunicate(actualComunicate);
+                    break;
 
             }
 
@@ -484,21 +488,21 @@ namespace Kolejki_LAB3
         public void handleINComunicate(Comunicates actualComunicate)
         {
             // sprawdź gdzie auto może wyjść
-            List<CarWash> carWashesFromINState = QueueSystem.getPossibleMovesFromINState();
+            List<int> carWashesFromINState = QueueSystem.getPossibleMovesFromINState();
             /*
              *  @todo   dorobić losowanie z określonym prawdopodobieństwem
              *          wylosuj prawdopodobieństwo i wybierz maszynę
              */
-            CarWash choosenCarWash = carWashesFromINState[0];
+            int choosenCarWash = carWashesFromINState[0];
 
             // jeśli jest miejsce w maszynie to obsłuż zadanie
-            if (_formQueueSystemsController.CheckFreeServicePlaces(choosenCarWash))
+            if (_formQueueSystemsController.CheckFreeServicePlaces(QueueSystem.carWashList[choosenCarWash]))
             {
-                _formQueueSystemsController.AddApplicationToServicePlace(choosenCarWash, actualComunicate.oComunicateCar);
+                _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
             }
-            else if (_formQueueSystemsController.CheckFreePlaceInQueue(choosenCarWash))
+            else if (_formQueueSystemsController.CheckFreePlaceInQueue(QueueSystem.carWashList[choosenCarWash]))
             {
-                _formQueueSystemsController.AddApplicationToQueue(choosenCarWash, actualComunicate.oComunicateCar);
+                _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
                 //backgroundWorkerUpdateInterface.RunWorkerAsync();
             }
             else
@@ -510,11 +514,41 @@ namespace Kolejki_LAB3
         public void handleAddedToServicePlaceComunicate(Comunicates actualComunicate)
         {
             // "odczekaj" czas mycia - tutaj pewnie podepnie się funkcjonalność progressBara
+            actualComunicate.oComunicateCar.setPlannedWaitingTime();
+            int time = actualComunicate.oComunicateCar.PlannedWaitingTime + actualComunicate.iComunicateTime;
 
-            int time = actualComunicate.oComunicateCar.ArrivalTime + 165;
-
+            // usuwa zadanie z maszyny
+            _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar);
             // generuje komunikat
             _formQueueSystemsController.addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
+        }
+
+        public void handleServicePlaceFinishedComunicate(Comunicates actualComunicate)
+        {
+            // sprawdź wszystkie możliwe wyjścia z maszyny
+            List<InputOutput> outputCarWashes = actualComunicate.oComunicateCarWash.getOutputs();
+            /*
+             *  @todo   dorobić losowanie z określonym prawdopodobieństwem
+             *          wylosuj prawdopodobieństwo i wybierz maszynę
+             */
+            //CarWash choosenCarWash = outputCarWashes[0].CarWash;
+            CarWash choosenCarWash = QueueSystem.carWashList[1];
+
+            // jeśli jest miejsce w maszynie to obsłuż zadanie
+            if (_formQueueSystemsController.CheckFreeServicePlaces(choosenCarWash))
+            {
+                _formQueueSystemsController.AddApplicationToServicePlace(choosenCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+            }
+            else if (_formQueueSystemsController.CheckFreePlaceInQueue(choosenCarWash))
+            {
+                _formQueueSystemsController.AddApplicationToQueue(choosenCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+                //backgroundWorkerUpdateInterface.RunWorkerAsync();
+            }
+            else
+            {
+                _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar);
+            }
+
         }
     }
 }

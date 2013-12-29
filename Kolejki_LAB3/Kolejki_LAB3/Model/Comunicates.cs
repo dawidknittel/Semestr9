@@ -22,6 +22,7 @@ namespace Kolejki_LAB3.Model
                 MachineName = carWash.MachineName;
             sComunicateType = sType;
             oComunicateCar = car;
+            oComunicateCarWash = carWash;
             sComunicateContent = iTime + "\t" + getComunicateContentByType(sType, car.IdCar, MachineName);
             iComunicateTime = iTime;
         }
@@ -37,6 +38,14 @@ namespace Kolejki_LAB3.Model
         public static Comunicates getComunicateToHandle()
         {
             sortComunicates();
+
+            Console.WriteLine(" --- ");
+            foreach (Comunicates com in QueueSystem.comunicates)
+            {
+                Console.WriteLine(com.sComunicateContent);
+            }
+            Console.WriteLine(" --- ");
+
             if (QueueSystem.comunicates.Count > 0)
             {
                 // pobiera najwcześniejsze zdarzenie do obsługi
@@ -97,6 +106,8 @@ namespace Kolejki_LAB3.Model
         /// <param name="index"></param>
         public static void markComunicateAsUsed(int index)
         {
+            // wrzucamy komunikat do listy już obsłużonych komunikatów
+            QueueSystem.comunicatesUsed.Add(QueueSystem.comunicates[index]);
             QueueSystem.comunicates.RemoveAt(index);
         }
 

@@ -45,6 +45,11 @@ namespace Kolejki_LAB3.Model
             return bHas;
         }
 
+        public List<InputOutput> getOutputs()
+        {
+            return OutputSystems;
+        }
+
         #endregion
     }
 }

@@ -240,7 +240,7 @@ namespace Kolejki_LAB3
         /// </summary>
         /// <param name="carWash"></param>
         /// <param name="car"></param>
-        public void AddApplicationToServicePlace(CarWash carWash, Car car)
+        public void AddApplicationToServicePlace(CarWash carWash, Car car, int time)
         {
             foreach (ServicePlace servicePlace in carWash.ServicePlaces)
             {
@@ -253,7 +253,8 @@ namespace Kolejki_LAB3
                     servicePlace.ProgressBar.PerformStep();
 
                     // generuje komunikat
-                    addComunicateToStack(new Comunicates("ADDED_TO_SERVICE_PLACE", iActualTime, car, carWash));
+                    addComunicateToStack(new Comunicates("ADDED_TO_SERVICE_PLACE", time, car, carWash));
+                    break;
                 }
             }
         }
@@ -301,6 +302,8 @@ namespace Kolejki_LAB3
                     servicePlace.CurrentCar = null;
                 }
             }
+
+            // @todo jak samochód schodzi z maszyny to sprawdzić czy któryś czeka w kolejce i wpuścić go do maszyny
         }
 
         /// <summary>
@@ -308,7 +311,7 @@ namespace Kolejki_LAB3
         /// </summary>
         /// <param name="listBoxQueue"></param>
         /// <param name="car"></param>
-        public void AddApplicationToQueue(CarWash carWash, Car car)
+        public void AddApplicationToQueue(CarWash carWash, Car car, int time)
         {
             /*
              * @Dawid : Dawid, nie wiem jak sprawdzić aktualną długość kolejki więc poprawiam to. W razie czego przywrócisz to sobi e.
@@ -317,7 +320,7 @@ namespace Kolejki_LAB3
             carWash.ListBox.Items.Add(car.IdCar.ToString());
 
             // generuje komunikat
-            addComunicateToStack(new Comunicates("ADDED_TO_QUEUE", iActualTime, car, carWash));
+            addComunicateToStack(new Comunicates("ADDED_TO_QUEUE", time, car, carWash));
             
         }
 
@@ -410,8 +413,9 @@ namespace Kolejki_LAB3
 
         public void generateNewCar()
         {
-            RandomGenerator.simpleRandomValue = new Random();
-            iActualTime += Convert.ToInt32(RandomGenerator.ExponentialGenerator(120, QueueSystem.Lambda, RandomGenerator.simpleRandomValue));
+            //RandomGenerator.simpleRandomValue = new Random();
+            //iActualTime += Convert.ToInt32(RandomGenerator.ExponentialGenerator(120, QueueSystem.Lambda, RandomGenerator.simpleRandomValue));
+            iActualTime += Convert.ToInt32(TestSimpleRNG.SimpleRNG.GetExponential(QueueSystem.Lambda));
 
             Car newCar = new Car(iActualTime);
             QueueSystem.cars.Add(newCar);
@@ -421,9 +425,9 @@ namespace Kolejki_LAB3
         public void addComunicateToStack(Comunicates com)
         {
             QueueSystem.comunicates.Add(com);
-            View.ListBoxComunicates.Items.Add(com.sComunicateContent);
+            //View.ListBoxComunicates.Items.Add(com.sComunicateContent);
 
-            Console.WriteLine(com.sComunicateContent);
+            //Console.WriteLine(com.sComunicateContent);
         }
 
         #endregion
