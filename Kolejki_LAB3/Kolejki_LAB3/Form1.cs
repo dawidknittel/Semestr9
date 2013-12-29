@@ -498,55 +498,55 @@ namespace Kolejki_LAB3
             // jeśli jest miejsce w maszynie to obsłuż zadanie
             if (_formQueueSystemsController.CheckFreeServicePlaces(QueueSystem.carWashList[choosenCarWash]))
             {
-                _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[choosenCarWash], QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId), actualComunicate.iComunicateTime);
+                _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
             }
             else if (_formQueueSystemsController.CheckFreePlaceInQueue(QueueSystem.carWashList[choosenCarWash]))
             {
-                _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[choosenCarWash], QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId), actualComunicate.iComunicateTime);
+                _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
                 //backgroundWorkerUpdateInterface.RunWorkerAsync();
             }
             else
             {
-                _formQueueSystemsController.RemoveApplicationFromSystem(QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId));
+                _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar);
             }
         }
 
         public void handleAddedToServicePlaceComunicate(Comunicates actualComunicate)
         {
             // "odczekaj" czas mycia - tutaj pewnie podepnie się funkcjonalność progressBara
-            QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId).setPlannedWaitingTime();
-            int time = QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId).PlannedWaitingTime + actualComunicate.iComunicateTime;
+            actualComunicate.oComunicateCar.setPlannedWaitingTime();
+            int time = actualComunicate.oComunicateCar.PlannedWaitingTime + actualComunicate.iComunicateTime;
 
             // usuwa zadanie z maszyny
-            _formQueueSystemsController.RemoveApplicationFromServicePlace(QueueSystem.carWashList.Find(o => o.MachineName == actualComunicate.iComunicateCarWashName), QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId));
+            _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar);
             // generuje komunikat
-            _formQueueSystemsController.addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.iComunicateCarId, actualComunicate.iComunicateCarWashName));
+            _formQueueSystemsController.addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
         }
 
         public void handleServicePlaceFinishedComunicate(Comunicates actualComunicate)
         {
             // sprawdź wszystkie możliwe wyjścia z maszyny
-            List<InputOutput> outputCarWashes = QueueSystem.carWashList.Find(o => o.MachineName == actualComunicate.iComunicateCarWashName).getOutputs();
+            List<InputOutput> outputCarWashes = actualComunicate.oComunicateCarWash.getOutputs();
             /*
              *  @todo   dorobić losowanie z określonym prawdopodobieństwem
              *          wylosuj prawdopodobieństwo i wybierz maszynę
              */
             //CarWash choosenCarWash = outputCarWashes[0].CarWash;
-            int choosenCarWash = 1;
+            CarWash choosenCarWash = QueueSystem.carWashList[1];
 
             // jeśli jest miejsce w maszynie to obsłuż zadanie
-            if (_formQueueSystemsController.CheckFreeServicePlaces(QueueSystem.carWashList[choosenCarWash]))
+            if (_formQueueSystemsController.CheckFreeServicePlaces(choosenCarWash))
             {
-                _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[choosenCarWash], QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId), actualComunicate.iComunicateTime);
+                _formQueueSystemsController.AddApplicationToServicePlace(choosenCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
             }
-            else if (_formQueueSystemsController.CheckFreePlaceInQueue(QueueSystem.carWashList[choosenCarWash]))
+            else if (_formQueueSystemsController.CheckFreePlaceInQueue(choosenCarWash))
             {
-                _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[choosenCarWash], QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId), actualComunicate.iComunicateTime);
+                _formQueueSystemsController.AddApplicationToQueue(choosenCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
                 //backgroundWorkerUpdateInterface.RunWorkerAsync();
             }
             else
             {
-                _formQueueSystemsController.RemoveApplicationFromSystem(QueueSystem.cars.Find(o => o.IdCar == actualComunicate.iComunicateCarId));
+                _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar);
             }
 
         }

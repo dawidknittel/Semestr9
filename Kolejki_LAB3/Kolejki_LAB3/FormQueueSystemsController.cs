@@ -253,7 +253,7 @@ namespace Kolejki_LAB3
                     servicePlace.ProgressBar.PerformStep();
 
                     // generuje komunikat
-                    addComunicateToStack(new Comunicates("ADDED_TO_SERVICE_PLACE", time, car.IdCar, carWash.MachineName));
+                    addComunicateToStack(new Comunicates("ADDED_TO_SERVICE_PLACE", time, car, carWash));
                     break;
                 }
             }
@@ -320,7 +320,7 @@ namespace Kolejki_LAB3
             carWash.ListBox.Items.Add(car.IdCar.ToString());
 
             // generuje komunikat
-            addComunicateToStack(new Comunicates("ADDED_TO_QUEUE", time, car.IdCar, carWash.MachineName));
+            addComunicateToStack(new Comunicates("ADDED_TO_QUEUE", time, car, carWash));
             
         }
 
@@ -348,7 +348,7 @@ namespace Kolejki_LAB3
         public void RemoveApplicationFromSystem(Car car)
         {
             // generuje komunikat
-            addComunicateToStack(new Comunicates("REMOVED_FROM_SYSTEM", car.ArrivalTime, car.IdCar));
+            addComunicateToStack(new Comunicates("REMOVED_FROM_SYSTEM", car.ArrivalTime, car));
 
             // jako że jest to informacja o usunięciu zadania z systemu nie potrzebujemy jej przechowywać
             Comunicates.markComunicateAsUsed(QueueSystem.comunicates.Count - 1);
@@ -419,7 +419,7 @@ namespace Kolejki_LAB3
 
             Car newCar = new Car(iActualTime);
             QueueSystem.cars.Add(newCar);
-            addComunicateToStack(new Comunicates("IN", newCar.ArrivalTime, newCar.IdCar));
+            addComunicateToStack(new Comunicates("IN", newCar.ArrivalTime, newCar));
         }
 
         public void addComunicateToStack(Comunicates com)
