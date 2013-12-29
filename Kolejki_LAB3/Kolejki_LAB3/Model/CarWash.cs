@@ -32,6 +32,19 @@ namespace Kolejki_LAB3.Model
             return null;
         }
 
+        public static bool checkCarWashHasInputStartState(CarWash carwash)
+        {
+            bool bHas = false;
+
+            foreach (InputOutput inputs in carwash.InputSystems)
+            {
+                if (inputs.State == "Start")
+                    bHas = true;
+            }
+
+            return bHas;
+        }
+
         #endregion
     }
 }

@@ -19,6 +19,7 @@ namespace Kolejki_LAB3
         private List<SystemConfiguration> systemConfiguration = null; 
         private FormQueueSystems View = null;
         private bool noFile = false;
+        public int iActualTime = 0;
 
         private const string FILE_NAME = "ConfigurationData.xml";
 
@@ -250,6 +251,9 @@ namespace Kolejki_LAB3
                     servicePlace.ProgressBar.Minimum = 0;
                     servicePlace.ProgressBar.Step = 1;
                     servicePlace.ProgressBar.PerformStep();
+
+                    // generuje komunikat
+                    addComunicateToStack(new Comunicates("ADDED_TO_SERVICE_PLACE", iActualTime, car, carWash));
                 }
             }
         }
@@ -266,6 +270,19 @@ namespace Kolejki_LAB3
                 if (servicePlace.CurrentCar == null)
                     return true;
             }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sprawdza czy jest miejsce w kolejce
+        /// </summary>
+        /// <param name="carWash"></param>
+        /// <returns></returns>
+        public bool CheckFreePlaceInQueue(CarWash carwash)
+        {
+            if (carwash.ListBox.Items.Count < ((carwash.QueueLength) - 1))
+                return true;
 
             return false;
         }
@@ -291,10 +308,17 @@ namespace Kolejki_LAB3
         /// </summary>
         /// <param name="listBoxQueue"></param>
         /// <param name="car"></param>
-        public void AddApplicationToQueue(ListBox listBoxQueue, Car car)
+        public void AddApplicationToQueue(CarWash carWash, Car car)
         {
-            listBoxQueue.BeginInvoke(new Action(() => listBoxQueue.Items.Add(car.IdCar.ToString())));
-            //listBoxQueue.Items.Add(car.IdCar.ToString());      
+            /*
+             * @Dawid : Dawid, nie wiem jak sprawdzić aktualną długość kolejki więc poprawiam to. W razie czego przywrócisz to sobi e.
+             */
+            //carWash.ListBox.BeginInvoke(new Action(() => carWash.ListBox.Items.Add(car.IdCar.ToString())));
+            carWash.ListBox.Items.Add(car.IdCar.ToString());
+
+            // generuje komunikat
+            addComunicateToStack(new Comunicates("ADDED_TO_QUEUE", iActualTime, car, carWash));
+            
         }
 
         /// <summary>
@@ -312,6 +336,20 @@ namespace Kolejki_LAB3
                 }
                 return;
             }    
+        }
+
+        /// <summary>
+        /// Usuwa zadanie z systemu w momencie gdy nie ma wolnych miejsc w maszynach wychodzących ze stanu START (lub "IN")
+        /// </summary>
+        /// <param name="car"></param>
+        public void RemoveApplicationFromSystem(Car car)
+        {
+            // generuje komunikat
+            addComunicateToStack(new Comunicates("REMOVED_FROM_SYSTEM", car.ArrivalTime, car));
+
+            // jako że jest to informacja o usunięciu zadania z systemu nie potrzebujemy jej przechowywać
+            Comunicates.markComunicateAsUsed(QueueSystem.comunicates.Count - 1);
+
         }
 
         public void Comunicate(string comunicate)
@@ -368,6 +406,24 @@ namespace Kolejki_LAB3
                     }
                 }
             }
+        }
+
+        public void generateNewCar()
+        {
+            RandomGenerator.simpleRandomValue = new Random();
+            iActualTime += Convert.ToInt32(RandomGenerator.ExponentialGenerator(120, QueueSystem.Lambda, RandomGenerator.simpleRandomValue));
+
+            Car newCar = new Car(iActualTime);
+            QueueSystem.cars.Add(newCar);
+            addComunicateToStack(new Comunicates("IN", newCar.ArrivalTime, newCar));
+        }
+
+        public void addComunicateToStack(Comunicates com)
+        {
+            QueueSystem.comunicates.Add(com);
+            View.ListBoxComunicates.Items.Add(com.sComunicateContent);
+
+            Console.WriteLine(com.sComunicateContent);
         }
 
         #endregion

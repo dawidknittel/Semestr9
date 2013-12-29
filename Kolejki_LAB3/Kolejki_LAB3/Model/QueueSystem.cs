@@ -26,6 +26,8 @@ namespace Kolejki_LAB3.Model
         public static List<CarWash> carWashList = new List<CarWash>();
         public static List<GroupBox> groupBoxList = new List<GroupBox>(); 
         public static List<Point> pointsList = new List<Point>();
+        public static List<Comunicates> comunicates = new List<Comunicates>();
+        public static List<Car> cars = new List<Car>();
 
         public static List<int> startPoints = new List<int>();
         public static List<int> endPoints = new List<int>();
@@ -68,6 +70,23 @@ namespace Kolejki_LAB3.Model
             endPoints.Add(240);
             endPoints.Add(50);
             endPoints.Add(60);
+        }
+
+        /// <summary>
+        /// Zwraca wszystkie maszyny, do których można dotrzeć ze stanu START
+        /// </summary>
+        public static List<CarWash> getPossibleMovesFromINState()
+        {
+            List<CarWash> carWashesFromINState = new List<CarWash>();
+
+            foreach (CarWash carWash in carWashList)
+            {
+                if (CarWash.checkCarWashHasInputStartState(carWash))
+                    carWashesFromINState.Add(carWash);
+            }
+
+            // @todo dorobić null exception
+            return carWashesFromINState;
         }
     }
 }

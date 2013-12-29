@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Threading;
 using System.Windows.Forms;
 using Kolejki_LAB3.Model;
+using System.Reflection;
 
 namespace Kolejki_LAB3
 {
@@ -148,8 +149,9 @@ namespace Kolejki_LAB3
 
             if (QueueSystem.carWashList.Count > 0)
             {
-                LoadExample();
-                buttonStart.Enabled = false;
+                //LoadExample();
+                RunSimulation();
+                //buttonStart.Enabled = false;
             }
         }
 
@@ -236,6 +238,7 @@ namespace Kolejki_LAB3
         /// </summary>
         private void LoadExample()
         {
+            /*
             List<Car> cars = new List<Car>();
             cars.Add(new Car(1, 60));
             cars.Add(new Car(2, 60));
@@ -275,6 +278,53 @@ namespace Kolejki_LAB3
                 }           
 
                 Thread.Sleep(300);
+            }
+            */
+        }
+
+        /// <summary>
+        /// Odpalenie symulacji
+        /// </summary>
+        private void RunSimulation()
+        {
+            //QueueSystem.comunicates.Add(new Comunicates("IaN", 0));
+            //QueueSystem.comunicates.Add(new Comunicates("IaN", 1));
+            //QueueSystem.comunicates.Add(new Comunicates("IaN", 5));
+            //QueueSystem.comunicates.Add(new Comunicates("IaN", 2));
+
+
+            //Comunicates.sortComunicates();
+            //Comunicates.getComunicateToHandle();
+            //Comunicates.getComunicateToHandle();
+
+            //if (QueueSystem.comunicates.Count == 0)
+            //{
+            //    QueueSystem.comunicates.Add(new Comunicates("IN", 0));
+            //    listBoxComunicates.Items.Add(QueueSystem.comunicates[0].iComunicateTime + " - " + QueueSystem.comunicates[0].sComunicateContent);
+            //}
+            //else
+            //{
+            //    listBoxComunicates.Items.Add("TEST2");
+            //}
+
+
+            while (true)
+            {
+                if (!Comunicates.checkComunicateINExists())
+                {
+                    _formQueueSystemsController.generateNewCar();
+                }
+
+                handleComunicate();
+
+                if (_formQueueSystemsController.iActualTime > 5000)
+                    break;
+
+                Console.WriteLine("New loop");
+
+                // sortuj
+                //listBoxComunicates.DataSource = QueueSystem.comunicates;
+                //listBoxComunicates.DisplayMember = "sComunicateContent";
             }
         }
 
@@ -385,6 +435,86 @@ namespace Kolejki_LAB3
             Controls.Add(percentLabel);
         }
 
-        #endregion    
+        #endregion 
+   
+        public static void var_dump(object obj)
+        {
+            Console.WriteLine("{0,-18} {1}", "Name", "Value");
+            string ln = @"-------------------------------------   
+               ----------------------------";
+            Console.WriteLine(ln);
+
+            Type t = obj.GetType();
+            PropertyInfo[] props = t.GetProperties();
+
+            for (int i = 0; i < props.Length; i++)
+            {
+                try
+                {
+                    Console.WriteLine("{0,-18} {1}",
+                          props[i].Name, props[i].GetValue(obj, null));
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine(e);   
+                }
+            }
+            Console.WriteLine();
+            //QueueSystem.comunicates.ForEach(i => Console.Write("{0}\n", i));
+        }
+
+        public void handleComunicate()
+        {
+            Comunicates actualComunicate = Comunicates.getComunicateToHandle();
+
+            switch (actualComunicate.sComunicateType)
+            {
+                case "IN":
+                    handleINComunicate(actualComunicate);
+                    break;
+                case "ADDED_TO_SERVICE_PLACE":
+                    handleAddedToServicePlaceComunicate(actualComunicate);
+                    break;
+
+            }
+
+            //Thread.Sleep(100);
+        }
+
+        public void handleINComunicate(Comunicates actualComunicate)
+        {
+            // sprawdź gdzie auto może wyjść
+            List<CarWash> carWashesFromINState = QueueSystem.getPossibleMovesFromINState();
+            /*
+             *  @todo   dorobić losowanie z określonym prawdopodobieństwem
+             *          wylosuj prawdopodobieństwo i wybierz maszynę
+             */
+            CarWash choosenCarWash = carWashesFromINState[0];
+
+            // jeśli jest miejsce w maszynie to obsłuż zadanie
+            if (_formQueueSystemsController.CheckFreeServicePlaces(choosenCarWash))
+            {
+                _formQueueSystemsController.AddApplicationToServicePlace(choosenCarWash, actualComunicate.oComunicateCar);
+            }
+            else if (_formQueueSystemsController.CheckFreePlaceInQueue(choosenCarWash))
+            {
+                _formQueueSystemsController.AddApplicationToQueue(choosenCarWash, actualComunicate.oComunicateCar);
+                //backgroundWorkerUpdateInterface.RunWorkerAsync();
+            }
+            else
+            {
+                _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar);
+            }
+        }
+
+        public void handleAddedToServicePlaceComunicate(Comunicates actualComunicate)
+        {
+            // "odczekaj" czas mycia - tutaj pewnie podepnie się funkcjonalność progressBara
+
+            int time = actualComunicate.oComunicateCar.ArrivalTime + 165;
+
+            // generuje komunikat
+            _formQueueSystemsController.addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
+        }
     }
 }
