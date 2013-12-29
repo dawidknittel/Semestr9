@@ -7,23 +7,20 @@ namespace Kolejki_LAB3.Model
 {
     public class Comunicates
     {
-        public Car oComunicateCar;
-        public CarWash oComunicateCarWash;
+        public int iComunicateCarId;
+        public string iComunicateCarWashName;
         public int iComunicateTime;
         public string sComunicateType { get; set; }
         public string sComunicateContent { get; set; }
 
         public static int IdCounter = 0;
 
-        public Comunicates(string sType, int iTime, Car car, CarWash carWash = null)
+        public Comunicates(string sType, int iTime, int carId, string MachineName = "")
         {
-            string MachineName = "";
-            if (carWash != null)
-                MachineName = carWash.MachineName;
             sComunicateType = sType;
-            oComunicateCar = car;
-            oComunicateCarWash = carWash;
-            sComunicateContent = iTime + "\t" + getComunicateContentByType(sType, car.IdCar, MachineName);
+            iComunicateCarId = carId;
+            iComunicateCarWashName = MachineName;
+            sComunicateContent = iTime + "\t" + getComunicateContentByType(sType, carId, MachineName);
             iComunicateTime = iTime;
         }
 
