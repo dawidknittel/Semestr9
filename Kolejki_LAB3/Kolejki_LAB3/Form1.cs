@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Threading;
 using System.Windows.Forms;
 using Kolejki_LAB3.Model;
 using System.Reflection;
@@ -40,6 +42,7 @@ namespace Kolejki_LAB3
             InitializeComponent();
 
             _formQueueSystemsController = new FormQueueSystemsController(this);
+            backgroundWorkerUpdateInterface.DoWork += backgroundWorkerUpdateInterface_DoWork;          
 
             QueueSystem.FillListPoints();
             QueueSystem.FillStartPoints();
@@ -130,7 +133,6 @@ namespace Kolejki_LAB3
             errorProviderStreamApplicationIntensity.Clear();
         }
 
-
         /// <summary>
         /// Reakcja na kliknięcie przycisku start
         /// </summary>
@@ -141,18 +143,32 @@ namespace Kolejki_LAB3
             if (int.Parse(numericUpDownServiceIntensity.Value.ToString()) == 0)
             {
                 errorProviderServiceTimeIntensity.SetError(numericUpDownServiceIntensity, "Nie wybrano wartości");
+                return;
             }
 
             if (int.Parse(numericUpDownStreamApplicationIntensity.Value.ToString()) == 0)
             {
                 errorProviderStreamApplicationIntensity.SetError(numericUpDownStreamApplicationIntensity, "Nie wybrano wartośći");
+                return;
             }
 
-            if (QueueSystem.carWashList.Count > 0)
+            if (buttonStart.Text.Equals("START"))
             {
-                //LoadExample();
-                RunSimulation();
-                //buttonStart.Enabled = false;
+                if (QueueSystem.carWashList.Count > 0)
+                {
+                    // Wywołanie zdarzenia backgroundWorkerUpdateInterface_DoWork
+                    backgroundWorkerUpdateInterface.RunWorkerAsync();                  
+                    //LoadExample();
+                    //RunSimulation();
+                    buttonStart.Text = "ZATRZYMAJ";
+                }
+            }
+            else if (backgroundWorkerUpdateInterface.IsBusy)
+            {
+                //Zatrzymanie symulacji, ale coś to hujowo na razie chodzi
+                backgroundWorkerUpdateInterface.WorkerSupportsCancellation = true;
+                backgroundWorkerUpdateInterface.CancelAsync();
+                buttonStart.Text = "START";
             }
         }
 
@@ -163,14 +179,27 @@ namespace Kolejki_LAB3
         /// <param name="e"></param>
         private void buttonClear_Click(object sender, EventArgs e)
         {
-            //listBoxComunicates.Items.Clear();
-            listBoxComunicates.DataSource = null;
+            Invoke((MethodInvoker) delegate
+            {
+                listBoxComunicates.Items.Clear();
+            });
         }
 
-        private void backgroundWorkerUpdateInterface_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        /// <summary>
+        /// Zdarzenie wywołujące uruchomienie symulacji
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void backgroundWorkerUpdateInterface_DoWork(object sender, DoWorkEventArgs e)
         {
-            listBoxComunicates.BeginInvoke(new Action(() => listBoxComunicates.Items.Add("sdfsdf")));
-            //listBoxComunicates.Items.Add("Sdf");
+            // Anulowanie wątku
+            if (backgroundWorkerUpdateInterface.CancellationPending)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            LoadExample();
         }
 
         #endregion
@@ -246,37 +275,51 @@ namespace Kolejki_LAB3
         /// Załadowanie przykładu działania
         /// </summary>
         private void LoadExample()
-        {
-            /*
+        {           
             List<Car> cars = new List<Car>();
             cars.Add(new Car(1, 60));
-            cars.Add(new Car(2, 60));
-            cars.Add(new Car(6, 60));
-            cars.Add(new Car(10, 60));
-            cars.Add(new Car(13, 60));
-            cars.Add(new Car(90, 60));
-            cars.Add(new Car(99, 60));
+            cars.Add(new Car(20, 60));
+            cars.Add(new Car(26, 60));
+            cars.Add(new Car(30, 60));
+            cars.Add(new Car(33, 60));
+            cars.Add(new Car(40, 60));
+            cars.Add(new Car(55, 60));
 
             int counter = 0;
 
-            for (int i = 0; i < 60; i++)
+            for (int i = 0; i < 50; i++)
             {
                 if (cars[counter].ArrivalTime == i)
                 {
-                    if (_formQueueSystemsController.CheckFreeServicePlaces(
-                            QueueSystem.carWashList[0]))
+                    if (_formQueueSystemsController.CheckFreeServicePlaces(QueueSystem.carWashList[0]))
                     {
-                        _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[0], cars[counter]);
+                        //Dodanie nowego samochodu do myjni
+                        _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[0], cars[counter], 0);
+                        Invoke((MethodInvoker)delegate
+                        {
+                            listBoxComunicates.Items.Add("Wejście samochodu 1");
+                        });
+                        //Dodanie nowego samochodu do myjni
+                        _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[1], cars[1], 0);
+                        Invoke((MethodInvoker)delegate
+                        {
+                            listBoxComunicates.Items.Add("Wejście samochodu 2");
+                        });
                     }
                     else
-                    {                      
-                        _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[0].ListBox, cars[counter]);                
-                        //backgroundWorkerUpdateInterface.RunWorkerAsync();
+                    {
+                        //Dodanie nowego samochodu do kolejki
+                        _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[0], cars[counter], 0);
+                        Invoke((MethodInvoker)delegate
+                        {
+                            listBoxComunicates.Items.Add("Nowy samochód w kolejce");
+                        });            
                     }
 
                     counter++;
                 }
 
+                //Mycie w pierwszej maszynie
                 foreach (ServicePlace ServicePlace in QueueSystem.carWashList[0].ServicePlaces)
                 {
                     if (ServicePlace.CurrentCar != null)
@@ -284,11 +327,21 @@ namespace Kolejki_LAB3
                         ServicePlace.CurrentCar.ProgressWashingTime++;
                         _formQueueSystemsController.SetCarWashProgress(QueueSystem.carWashList[0], ServicePlace.CurrentCar);
                     }
-                }           
+                }
 
-                Thread.Sleep(300);
+                //Mycie w drugiej maszynie
+                foreach (ServicePlace ServicePlace in QueueSystem.carWashList[1].ServicePlaces)
+                {
+                    if (ServicePlace.CurrentCar != null)
+                    {
+                        ServicePlace.CurrentCar.ProgressWashingTime++;
+                        _formQueueSystemsController.SetCarWashProgress(QueueSystem.carWashList[1], ServicePlace.CurrentCar);
+                    }
+                }  
+
+                Thread.Sleep(500);
             }
-            */
+            
         }
 
         /// <summary>
@@ -511,7 +564,6 @@ namespace Kolejki_LAB3
             else if (_formQueueSystemsController.CheckFreePlaceInQueue(QueueSystem.carWashList[choosenCarWash]))
             {
                 _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-                //backgroundWorkerUpdateInterface.RunWorkerAsync();
             }
             else
             {

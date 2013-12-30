@@ -18,13 +18,13 @@ namespace Kolejki_LAB3
 
         public static int IdCounter = 1;
 
-        public Car(int time/*, WaitingTimeOption waitingOption, int plannedWaitingTime */)
+        public Car(int time/*, WaitingTimeOption waitingOption*/, int plannedWaitingTime )
         {
             IdCar = Car.IdCounter++;
 
             WaitingTime = 0;
             ProgressWashingTime = 0;
-            //PlannedWaitingTime = plannedWaitingTime;
+            PlannedWaitingTime = plannedWaitingTime;
             //PlannedWaitingTime = GetWaitingTime(waitingOption);
             ArrivalTime = time;
         }

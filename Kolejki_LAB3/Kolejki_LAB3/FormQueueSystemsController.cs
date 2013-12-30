@@ -248,10 +248,13 @@ namespace Kolejki_LAB3
                 if (servicePlace.CurrentCar == null)
                 {
                     servicePlace.CurrentCar = car;
-                    servicePlace.ProgressBar.Maximum = car.PlannedWaitingTime;
-                    servicePlace.ProgressBar.Minimum = 0;
-                    servicePlace.ProgressBar.Step = 1;
-                    servicePlace.ProgressBar.PerformStep();
+                    View.Invoke((MethodInvoker)delegate 
+                    {  
+                        servicePlace.ProgressBar.Maximum = car.PlannedWaitingTime;
+                        servicePlace.ProgressBar.Minimum = 0;
+                        servicePlace.ProgressBar.Step = 1;
+                        servicePlace.ProgressBar.PerformStep();
+                    });
 
                     // generuje komunikat
                     addComunicateToStack(new Comunicates("ADDED_TO_SERVICE_PLACE", time, car, carWash));
@@ -317,9 +320,12 @@ namespace Kolejki_LAB3
         {
             /*
              * @Dawid : Dawid, nie wiem jak sprawdzić aktualną długość kolejki więc poprawiam to. W razie czego przywrócisz to sobi e.
+             * 
+             * int długośćkolejki = carWash.ListBox.Items.Count;    !!
              */
             //carWash.ListBox.BeginInvoke(new Action(() => carWash.ListBox.Items.Add(car.IdCar.ToString())));
-            carWash.ListBox.Items.Add(car.IdCar.ToString());
+            //carWash.ListBox.Items.Add(car.IdCar.ToString());
+            View.Invoke((MethodInvoker) delegate { carWash.ListBox.Items.Add(car.IdCar.ToString()); });
 
             // generuje komunikat
             addComunicateToStack(new Comunicates("ADDED_TO_QUEUE", time, car, carWash));
@@ -337,7 +343,9 @@ namespace Kolejki_LAB3
             {
                 if (item.ToString().Equals(car.IdCar.ToString()))
                 {
-                    listBoxQueue.Items.Remove(item);
+                    View.Invoke((MethodInvoker) delegate {
+                       listBoxQueue.Items.Remove(item);
+                    });
                 }
                 return;
             }    
@@ -359,7 +367,9 @@ namespace Kolejki_LAB3
 
         public void Comunicate(string comunicate)
         {
-            View.ListBoxComunicates.Items.Add(comunicate);
+            View.Invoke((MethodInvoker)delegate {  
+                 View.ListBoxComunicates.Items.Add(comunicate);
+            });
         }
 
         /// <summary>
@@ -367,10 +377,12 @@ namespace Kolejki_LAB3
         /// </summary>
         /// <param name="carWash"></param>
         /// <param name="car"></param>
-        public void SetCarWashProgress(CarWash carWash, Car car)
+        public void SetCarWashProgress(CarWash carWash, Car car)      
         {
-            ProgressBar currentProgressBar = GetProgressBar(carWash, car);
-            currentProgressBar.PerformStep();
+            View.Invoke((MethodInvoker)delegate {
+                ProgressBar currentProgressBar = GetProgressBar(carWash, car);
+                currentProgressBar.PerformStep();
+            }); 
         }
 
         public void DrawStartupLine()
@@ -419,7 +431,7 @@ namespace Kolejki_LAB3
             //iActualTime += Convert.ToInt32(RandomGenerator.ExponentialGenerator(120, QueueSystem.Lambda, RandomGenerator.simpleRandomValue));
             iActualTime += Convert.ToInt32(TestSimpleRNG.SimpleRNG.GetExponential(QueueSystem.Lambda));
 
-            Car newCar = new Car(iActualTime);
+            Car newCar = new Car(iActualTime, 0);
             QueueSystem.cars.Add(newCar);
             addComunicateToStack(new Comunicates("IN", newCar.ArrivalTime, newCar));
         }
