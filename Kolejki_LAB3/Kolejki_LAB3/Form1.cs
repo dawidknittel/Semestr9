@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Threading;
 using System.Windows.Forms;
 using Kolejki_LAB3.Model;
 using System.Reflection;
@@ -54,6 +53,7 @@ namespace Kolejki_LAB3
         {
             _formQueueSystemsController.DrawStartupLine();
             _formQueueSystemsController.DrawEndLine();
+            ReDrawAllRelations();
         }
 
         /// <summary>
@@ -95,6 +95,7 @@ namespace Kolejki_LAB3
         private void wczytajModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _formQueueSystemsController.LoadConfiguration();
+            ReDrawAllRelations();
         }
 
         /// <summary>
@@ -233,6 +234,13 @@ namespace Kolejki_LAB3
             DrawRelations(currentCarWash);
         }
 
+        public void ReDrawAllRelations()
+        {
+            foreach (CarWash carWash in QueueSystem.carWashList)
+            {
+                DrawRelations(carWash);
+            }
+        }
 
         /// <summary>
         /// Załadowanie przykładu działania

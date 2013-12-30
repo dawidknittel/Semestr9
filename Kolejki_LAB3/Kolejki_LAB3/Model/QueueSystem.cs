@@ -73,6 +73,24 @@ namespace Kolejki_LAB3.Model
             endPoints.Add(60);
         }
 
+        public static void UpdateCarWashReferenceAccordingToName()
+        {
+            foreach (CarWash carWash in carWashList)
+            {
+                foreach (InputOutput inputOutput in carWash.InputSystems)
+                {
+                    if (inputOutput.CarWash == null && inputOutput.State.Equals(SystemState.None.ToString()))
+                        inputOutput.CarWash = CarWash.FindCarWash(inputOutput.MachineName);
+                }
+
+                foreach (InputOutput inputOutput in carWash.OutputSystems)
+                {
+                    if (inputOutput.CarWash == null && inputOutput.State.Equals(SystemState.None.ToString()))
+                        inputOutput.CarWash = CarWash.FindCarWash(inputOutput.MachineName);
+                }
+            }
+        }
+
         /// <summary>
         /// Zwraca wszystkie indexy maszyn, do których można dotrzeć ze stanu START
         /// </summary>

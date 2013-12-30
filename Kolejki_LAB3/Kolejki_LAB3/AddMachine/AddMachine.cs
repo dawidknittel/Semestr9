@@ -149,6 +149,7 @@ namespace Kolejki_LAB3.AddMachine
                 {
                     _addMachineController.CurrentCarWash.InputSystems.Add(new InputOutput()
                     {
+                        MachineName = comboBoxInput.Text,
                         CarWash = CarWash.FindCarWash(comboBoxInput.Text),
                         Percent = int.Parse(numericUpDownInput.Value.ToString()),
                         State = SystemState.None.ToString()
@@ -204,6 +205,7 @@ namespace Kolejki_LAB3.AddMachine
                 {
                     _addMachineController.CurrentCarWash.OutputSystems.Add(new InputOutput()
                     {
+                        MachineName = comboBoxOutput.Text,
                         CarWash = CarWash.FindCarWash(comboBoxOutput.Text),
                         Percent = int.Parse(numericUpDownOutput.Value.ToString()),
                         State = SystemState.None.ToString()

@@ -89,7 +89,7 @@ namespace Kolejki_LAB3
                             {
                                 carWash.InputSystems.Add(new InputOutput()
                                 {
-                                    CarWash = CarWash.FindCarWash(inputOutput.ChildNodes[0].InnerText),
+                                    MachineName = inputOutput.ChildNodes[0].InnerText,
                                     Percent = int.Parse(inputOutput.ChildNodes[1].InnerText),
                                     State = inputOutput.ChildNodes[2].InnerText
                                 });
@@ -107,7 +107,7 @@ namespace Kolejki_LAB3
                             {
                                 carWash.OutputSystems.Add(new InputOutput()
                                 {
-                                    CarWash = CarWash.FindCarWash(inputOutput.ChildNodes[0].InnerText),
+                                    MachineName = inputOutput.ChildNodes[0].InnerText,
                                     Percent = int.Parse(inputOutput.ChildNodes[1].InnerText),
                                     State = inputOutput.ChildNodes[2].InnerText
                                 });
@@ -119,6 +119,7 @@ namespace Kolejki_LAB3
                     View.AddMachineToInterface(carWash);
                 }
 
+                QueueSystem.UpdateCarWashReferenceAccordingToName();
             }
             catch (FileNotFoundException)
             {
