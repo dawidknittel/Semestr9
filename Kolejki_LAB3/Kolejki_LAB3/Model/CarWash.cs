@@ -45,6 +45,19 @@ namespace Kolejki_LAB3.Model
             return bHas;
         }
 
+        public static decimal getCarWashInputStartStatePercent(CarWash carwash)
+        {
+            decimal percent = 0;
+
+            foreach (InputOutput inputs in carwash.InputSystems)
+            {
+                if (inputs.State == "Start")
+                    percent = inputs.Percent;
+            }
+
+            return percent;
+        }
+
         public List<InputOutput> getOutputs()
         {
             return OutputSystems;

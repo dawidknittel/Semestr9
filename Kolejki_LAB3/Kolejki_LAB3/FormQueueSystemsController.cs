@@ -301,7 +301,7 @@ namespace Kolejki_LAB3
         {
             foreach (ServicePlace servicePlace in carWash.ServicePlaces)
             {
-                if (servicePlace.CurrentCar.Equals(car))
+                if ((servicePlace.CurrentCar != null) && (servicePlace.CurrentCar.Equals(car)))
                 {
                     servicePlace.CurrentCar = null;
                     break;

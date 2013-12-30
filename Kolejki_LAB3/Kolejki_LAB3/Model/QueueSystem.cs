@@ -92,20 +92,74 @@ namespace Kolejki_LAB3.Model
         }
 
         /// <summary>
-        /// Zwraca wszystkie indexy maszyn, do których można dotrzeć ze stanu START
+        /// Zwraca wszystkie maszyny, do których można dotrzeć ze stanu START
         /// </summary>
-        public static List<int> getPossibleMovesFromINState()
+        public static List<CarWash> getPossibleMovesFromINState()
         {
-            List<int> carWashesFromINState = new List<int>();
+            List<CarWash> carWashesFromINState = new List<CarWash>();
 
             foreach (CarWash carWash in carWashList)
             {
                 if (CarWash.checkCarWashHasInputStartState(carWash))
-                    carWashesFromINState.Add(carWashList.IndexOf(carWash));
+                    carWashesFromINState.Add(carWash);
             }
 
             // @todo dorobić null exception
             return carWashesFromINState;
+        }
+
+        public static int chooseMoveFromStartState(List<CarWash> carWashesFromINState)
+        {
+            if (carWashesFromINState.Count == 1)
+                return QueueSystem.carWashList.IndexOf(carWashesFromINState[0]);
+
+            Random gen = new Random();
+            int choosenPercent = gen.Next(1, 100);
+
+            int choosenCarWash = 0;
+            int percent = 0;
+
+            for (int i = 0; i < carWashesFromINState.Count; i++)
+            {
+                int endPercent = Convert.ToInt32(CarWash.getCarWashInputStartStatePercent(carWashesFromINState[i]));
+
+                if ((choosenPercent > percent) && (choosenPercent <= percent + endPercent))
+                {
+                    choosenCarWash = QueueSystem.carWashList.IndexOf(carWashesFromINState[i]);
+                    break;
+                }
+
+                percent = endPercent + 1;
+            }
+
+            return choosenCarWash;
+        }
+
+        public static InputOutput chooseMoveFromMachine(List<InputOutput> outputCarWashes)
+        {
+            if (outputCarWashes.Count == 1)
+                return outputCarWashes[0];
+
+            Random gen = new Random();
+            int choosenPercent = gen.Next(1, 100);
+
+            InputOutput choosenOutput = outputCarWashes[0];
+            int percent = 0;
+
+            for (int i = 0; i < outputCarWashes.Count; i++)
+            {
+                int endPercent = Convert.ToInt32(outputCarWashes[i].Percent);
+
+                if ((choosenPercent > percent) && (choosenPercent <= percent + endPercent))
+                {
+                    choosenOutput = outputCarWashes[i];
+                    break;
+                }
+
+                percent = endPercent + 1;
+            }
+
+            return choosenOutput;
         }
     }
 }

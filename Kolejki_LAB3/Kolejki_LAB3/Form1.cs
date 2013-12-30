@@ -159,8 +159,8 @@ namespace Kolejki_LAB3
                     // Wywołanie zdarzenia backgroundWorkerUpdateInterface_DoWork
                     backgroundWorkerUpdateInterface.RunWorkerAsync();                  
                     //LoadExample();
-                    //RunSimulation();
-                    buttonStart.Text = "ZATRZYMAJ";
+                    RunSimulation();
+                    //buttonStart.Text = "ZATRZYMAJ";
                 }
             }
             else if (backgroundWorkerUpdateInterface.IsBusy)
@@ -276,6 +276,7 @@ namespace Kolejki_LAB3
         /// </summary>
         private void LoadExample()
         {           
+            /*
             List<Car> cars = new List<Car>();
             cars.Add(new Car(1, 60));
             cars.Add(new Car(20, 60));
@@ -341,6 +342,7 @@ namespace Kolejki_LAB3
 
                 Thread.Sleep(500);
             }
+            */
             
         }
 
@@ -370,8 +372,8 @@ namespace Kolejki_LAB3
             //}
 
 
-            //while (true)
-            //{
+            while (true)
+            {
                 if (!Comunicates.checkComunicateINExists())
                 {
                     _formQueueSystemsController.generateNewCar();
@@ -379,15 +381,15 @@ namespace Kolejki_LAB3
 
                 handleComunicate();
 
-                //if (_formQueueSystemsController.iActualTime > 5000)
-                    //break;
+                if (_formQueueSystemsController.iActualTime > 5000)
+                    break;
 
 
                 // sortuj
                 listBoxComunicates.DataSource = null;
                 listBoxComunicates.DataSource = QueueSystem.comunicatesUsed;
                 listBoxComunicates.DisplayMember = "sComunicateContent";
-            //}
+            }
         }
 
         public void DrawRelations(CarWash carWash)
@@ -549,12 +551,8 @@ namespace Kolejki_LAB3
         public void handleINComunicate(Comunicates actualComunicate)
         {
             // sprawdź gdzie auto może wyjść
-            List<int> carWashesFromINState = QueueSystem.getPossibleMovesFromINState();
-            /*
-             *  @todo   dorobić losowanie z określonym prawdopodobieństwem
-             *          wylosuj prawdopodobieństwo i wybierz maszynę
-             */
-            int choosenCarWash = carWashesFromINState[0];
+            List<CarWash> carWashesFromINState = QueueSystem.getPossibleMovesFromINState();
+            int choosenCarWash = QueueSystem.chooseMoveFromStartState(carWashesFromINState);
 
             // jeśli jest miejsce w maszynie to obsłuż zadanie
             if (_formQueueSystemsController.CheckFreeServicePlaces(QueueSystem.carWashList[choosenCarWash]))
@@ -573,12 +571,10 @@ namespace Kolejki_LAB3
 
         public void handleAddedToServicePlaceComunicate(Comunicates actualComunicate)
         {
-            // "odczekaj" czas mycia - tutaj pewnie podepnie się funkcjonalność progressBara
+            // "odczekaj" czas mycia
             actualComunicate.oComunicateCar.setPlannedWaitingTime();
             int time = actualComunicate.oComunicateCar.PlannedWaitingTime + actualComunicate.iComunicateTime;
 
-            // usuwa zadanie z maszyny
-            //_formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar);
             // generuje komunikat
             _formQueueSystemsController.addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
         }
@@ -590,26 +586,29 @@ namespace Kolejki_LAB3
 
             // sprawdź wszystkie możliwe wyjścia z maszyny
             List<InputOutput> outputCarWashes = actualComunicate.oComunicateCarWash.getOutputs();
-            /*
-             *  @todo   dorobić losowanie z określonym prawdopodobieństwem
-             *          wylosuj prawdopodobieństwo i wybierz maszynę
-             */
-            //CarWash choosenCarWash = outputCarWashes[0].CarWash;
-            CarWash choosenCarWash = QueueSystem.carWashList[1];
+            InputOutput choosenCarWashOutput = QueueSystem.chooseMoveFromMachine(outputCarWashes);
 
-            // jeśli jest miejsce w maszynie to obsłuż zadanie
-            if (_formQueueSystemsController.CheckFreeServicePlaces(choosenCarWash))
+            // jeśli wylosowany został 
+            if (choosenCarWashOutput.CarWash == null && choosenCarWashOutput.State == "End")
             {
-                _formQueueSystemsController.AddApplicationToServicePlace(choosenCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-            }
-            else if (_formQueueSystemsController.CheckFreePlaceInQueue(choosenCarWash))
-            {
-                _formQueueSystemsController.AddApplicationToQueue(choosenCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-                //backgroundWorkerUpdateInterface.RunWorkerAsync();
+                // obsługa końcowego komunikatu
             }
             else
             {
-                _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar);
+                // jeśli jest miejsce w maszynie to obsłuż zadanie
+                if (_formQueueSystemsController.CheckFreeServicePlaces(choosenCarWashOutput.CarWash))
+                {
+                    _formQueueSystemsController.AddApplicationToServicePlace(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+                }
+                else if (_formQueueSystemsController.CheckFreePlaceInQueue(choosenCarWashOutput.CarWash))
+                {
+                    _formQueueSystemsController.AddApplicationToQueue(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+                    //backgroundWorkerUpdateInterface.RunWorkerAsync();
+                }
+                else
+                {
+                    _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar);
+                }
             }
 
         }

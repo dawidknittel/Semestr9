@@ -81,19 +81,21 @@ namespace Kolejki_LAB3.Model
                     sContent = "Nadeszło nowe zgłoszenie nr " + iCarId;
                     break;
                 case "ADDED_TO_SERVICE_PLACE":
-                    sContent = "Zgłoszenie nr " + iCarId + " weszło na maszynę " + MachineName;
+                    //sContent = "Zgłoszenie nr " + iCarId + " weszło na maszynę " + MachineName;
+                    sContent = "Z (" + iCarId + ") weszło na " + MachineName;
                     break;
                 case "ADDED_TO_QUEUE":
-                    sContent = "Zgłoszenie nr " + iCarId + " weszło do bufora maszyny " + MachineName;
+                    //sContent = "Zgłoszenie nr " + iCarId + " weszło do bufora maszyny " + MachineName;
+                    sContent = "Z (" + iCarId + ") weszło do bufora " + MachineName;
                     break;
                 case "REMOVED_FROM_SYSTEM":
-                    sContent = "Zgłoszenie nr " + iCarId + " nie zostało obsłużone";
+                    //sContent = "Zgłoszenie nr " + iCarId + " nie zostało obsłużone";
+                    sContent = "Z (" + iCarId + ") nie zostało obsłużone";
                     break;
                 case "SERVICE_PLACE_FINISHED":
-                    sContent = "Zgłoszenie nr " + iCarId + " zeszło z maszyny " + MachineName;
+                    // sContent = "Zgłoszenie nr " + iCarId + " zeszło z maszyny " + MachineName;
+                    sContent = "Z (" + iCarId + ") zeszło z " + MachineName;
                     break;
-
-
 
             }
 
