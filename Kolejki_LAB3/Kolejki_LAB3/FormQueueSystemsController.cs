@@ -241,7 +241,7 @@ namespace Kolejki_LAB3
         /// </summary>
         /// <param name="carWash"></param>
         /// <param name="car"></param>
-        public void AddApplicationToServicePlace(CarWash carWash, Car car, int time)
+        public void AddApplicationToServicePlace(CarWash carWash, Car car, int time, bool bFromQueue = false)
         {
             foreach (ServicePlace servicePlace in carWash.ServicePlaces)
             {
@@ -257,7 +257,10 @@ namespace Kolejki_LAB3
                     });
 
                     // generuje komunikat
-                    addComunicateToStack(new Comunicates("ADDED_TO_SERVICE_PLACE", time, car, carWash));
+                    string comTxt = "ADDED_TO_SERVICE_PLACE";
+                    if (bFromQueue)
+                        comTxt = "GET_FROM_QUEUE";
+                    addComunicateToStack(new Comunicates(comTxt, time, car, carWash));
                     break;
                 }
             }
@@ -293,11 +296,56 @@ namespace Kolejki_LAB3
         }
 
         /// <summary>
+        /// Sprawdza czy zdarzenia czekają w kolejce
+        /// </summary>
+        /// <param name="carwash"></param>
+        /// <returns></returns>
+        public bool checkCarWashHasQueue(CarWash carwash)
+        {
+            if (carwash.ListBox.Items.Count > 0)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sprawdza czy w którymkolwiek wejściu do danej maszyny czeka samochód na obsługę
+        /// </summary>
+        /// <param name="carwash"></param>
+        /// <returns></returns>
+        public void checkCarWashWaitingApplications(CarWash carwash, int time)
+        {
+            foreach (InputOutput input in carwash.InputSystems)
+            {
+                if (input.CarWash != null) {
+                    foreach (ServicePlace servicePlace in input.CarWash.ServicePlaces)
+                    {
+                        if ((servicePlace.CurrentCar != null) && (servicePlace.CurrentCar.iTimeWaitingInMachine != 0))
+                        {
+                            Car tempCar = servicePlace.CurrentCar;
+                            // wyzeruj czas czekania na zwolnienie maszyny
+                            servicePlace.CurrentCar.iTimeWaitingInMachine = 0;
+                            
+                            // usuwa zadanie z maszyny
+                            RemoveApplicationFromServicePlace(input.CarWash, tempCar, time);
+
+                            // dodaj samochód do kolejki
+                            AddApplicationToQueue(carwash, tempCar, time);
+
+                            return;
+                        }
+                    }
+                }
+               
+            }
+        }
+
+        /// <summary>
         /// Usuń samochód ze stanowiska obsługi
         /// </summary>
         /// <param name="carWash"></param>
         /// <param name="car"></param>
-        public void RemoveApplicationFromServicePlace(CarWash carWash, Car car)
+        public void RemoveApplicationFromServicePlace(CarWash carWash, Car car, int time)
         {
             foreach (ServicePlace servicePlace in carWash.ServicePlaces)
             {
@@ -308,7 +356,18 @@ namespace Kolejki_LAB3
                 }
             }
 
-            // @todo jak samochód schodzi z maszyny to sprawdzić czy któryś czeka w kolejce i wpuścić go do maszyny
+            // sprawdź czy w maszynie są zgłoszenia w kolejce
+            if (checkCarWashHasQueue(carWash))
+            {
+                // @todo rozróżnic algorytmy maszyn, na razie tylko dla FIFO
+                Car carFromQueue = getApplicationFromQueue(carWash);
+
+                // usuń samochód z kolejki
+                RemoveApplicationFromQueue(carWash, carFromQueue,time);
+
+                // dodaj samochód z kolejki na stanowisko obsługi
+                AddApplicationToServicePlace(carWash, carFromQueue, time, true);
+            }
         }
 
         /// <summary>
@@ -335,32 +394,73 @@ namespace Kolejki_LAB3
         /// <summary>
         /// Usuń samochód z kolejki
         /// </summary>
-        /// <param name="listBoxQueue"></param>
+        /// <param name="carWash"></param>
         /// <param name="car"></param>
-        public void RemoveApplicationFromQueue(ListBox listBoxQueue, Car car)
+        public void RemoveApplicationFromQueue(CarWash carWash, Car car, int time)
         {
-            foreach (var item in listBoxQueue.Items)
+            foreach (var item in carWash.ListBox.Items)
             {
                 if (item.ToString().Equals(car.IdCar.ToString()))
                 {
                     View.Invoke((MethodInvoker) delegate {
-                       listBoxQueue.Items.Remove(item);
+                        carWash.ListBox.Items.Remove(item);
                     });
+                    break;
                 }
-                return;
-            }    
+            }
+
+
+            checkCarWashWaitingApplications(carWash, time);
+
+        }
+
+        /// <summary>
+        /// Pobiera samochód z kolejki do dalszej obsługi
+        /// </summary>
+        /// <param name="carWash"></param>
+        /// <returns></returns>
+        public Car getApplicationFromQueue(CarWash carWash)
+        {
+            int carId = 0;
+
+            if (carWash.ListBox.Items.Count == 1)
+            {
+                carId = Convert.ToInt32(carWash.ListBox.Items[0].ToString());
+            }
+            else
+            {
+                switch (carWash.Algorithm)
+                {
+                    case Algorithm.FIFO:
+                        carId = Convert.ToInt32(carWash.ListBox.Items[0].ToString());
+                        break;
+                    case Algorithm.LIFO:
+                        carId = Convert.ToInt32(carWash.ListBox.Items[carWash.ListBox.Items.Count - 1].ToString());
+                        break;
+                    case Algorithm.RSS:
+                        Random gen = new Random();
+                        int choosen = gen.Next(0, carWash.ListBox.Items.Count - 1);
+                        carId = Convert.ToInt32(carWash.ListBox.Items[choosen].ToString());
+                        break;
+                }
+            }
+
+
+            Car car = Car.findCar(carId);
+
+            return car;
         }
 
         /// <summary>
         /// Usuwa zadanie z systemu w momencie gdy nie ma wolnych miejsc w maszynach wychodzących ze stanu START (lub "IN")
         /// </summary>
         /// <param name="car"></param>
-        public void RemoveApplicationFromSystem(Car car)
+        public void RemoveApplicationFromSystem(Car car, int time)
         {
             // generuje komunikat
-            addComunicateToStack(new Comunicates("REMOVED_FROM_SYSTEM", car.ArrivalTime, car));
+            addComunicateToStack(new Comunicates("REMOVED_FROM_SYSTEM", time, car));
 
-            // jako że jest to informacja o usunięciu zadania z systemu nie potrzebujemy jej przechowywać
+            // jako że jest to informacja o usunięciu zadania z systemu nie potrzebujemy jej obsługiwać
             Comunicates.markComunicateAsUsed(QueueSystem.comunicates.Count - 1);
 
         }

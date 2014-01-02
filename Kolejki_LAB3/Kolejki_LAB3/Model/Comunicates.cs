@@ -88,13 +88,21 @@ namespace Kolejki_LAB3.Model
                     //sContent = "Zgłoszenie nr " + iCarId + " weszło do bufora maszyny " + MachineName;
                     sContent = "Z (" + iCarId + ") weszło do bufora " + MachineName;
                     break;
+                case "GET_FROM_QUEUE":
+                    //sContent = "Zgłoszenie nr " + iCarId + " weszło z bufora na maszynę " + MachineName;
+                    sContent = "Z (" + iCarId + ") weszło z buf do " + MachineName;
+                    break;
                 case "REMOVED_FROM_SYSTEM":
                     //sContent = "Zgłoszenie nr " + iCarId + " nie zostało obsłużone";
-                    sContent = "Z (" + iCarId + ") nie zostało obsłużone";
+                    sContent = "!! Z (" + iCarId + ") nie zostało obsłużone";
                     break;
                 case "SERVICE_PLACE_FINISHED":
-                    // sContent = "Zgłoszenie nr " + iCarId + " zeszło z maszyny " + MachineName;
-                    sContent = "Z (" + iCarId + ") zeszło z " + MachineName;
+                    // sContent = "Zgłoszenie nr " + iCarId + " wykonało się na maszynie " + MachineName;
+                    sContent = "Z (" + iCarId + ") finished na " + MachineName;
+                    break;
+                case "OUT":
+                    // sContent = "Zgłoszenie nr " + iCarId + " wyszło z systemu";
+                    sContent = "Z (" + iCarId + ") wyszło z systemu";
                     break;
 
             }

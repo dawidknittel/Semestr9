@@ -10,6 +10,7 @@ namespace Kolejki_LAB3
         public int PlannedWaitingTime;
         public int WaitingTime;
         public int ArrivalTime;
+        public int iTimeWaitingInMachine;
 
         public double Time;     
         public double ProgressWashingTime;
@@ -22,6 +23,7 @@ namespace Kolejki_LAB3
         {
             IdCar = Car.IdCounter++;
 
+            iTimeWaitingInMachine = 0;
             WaitingTime = 0;
             ProgressWashingTime = 0;
             PlannedWaitingTime = plannedWaitingTime;
@@ -59,6 +61,22 @@ namespace Kolejki_LAB3
             //RandomGenerator.simpleRandomValue = new Random();
             PlannedWaitingTime = Convert.ToInt32(TestSimpleRNG.SimpleRNG.GetExponential(QueueSystem.Lambda));
             //PlannedWaitingTime = Convert.ToInt32(RandomGenerator.ExponentialGenerator(120, QueueSystem.Lambda, RandomGenerator.simpleRandomValue));
+        }
+
+        public void setiTimeWaitingInMachine(int timeWaiting)
+        {
+            iTimeWaitingInMachine = timeWaiting;
+        }
+
+        public static Car findCar(int carIdToFind)
+        {
+            foreach (Car car in QueueSystem.cars)
+            {
+                if (car.IdCar == carIdToFind)
+                    return car;
+            }
+
+            return null;
         }
     }
 }

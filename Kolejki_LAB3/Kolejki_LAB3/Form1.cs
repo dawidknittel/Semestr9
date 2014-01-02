@@ -381,7 +381,7 @@ namespace Kolejki_LAB3
 
                 handleComunicate();
 
-                if (_formQueueSystemsController.iActualTime > 5000)
+                if (_formQueueSystemsController.iActualTime > 8000)
                     break;
 
 
@@ -537,6 +537,7 @@ namespace Kolejki_LAB3
                     handleINComunicate(actualComunicate);
                     break;
                 case "ADDED_TO_SERVICE_PLACE":
+                case "GET_FROM_QUEUE":
                     handleAddedToServicePlaceComunicate(actualComunicate);
                     break;
                 case "SERVICE_PLACE_FINISHED":
@@ -565,7 +566,7 @@ namespace Kolejki_LAB3
             }
             else
             {
-                _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar);
+                _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
             }
         }
 
@@ -581,33 +582,51 @@ namespace Kolejki_LAB3
 
         public void handleServicePlaceFinishedComunicate(Comunicates actualComunicate)
         {
-            // usuwa zadanie z maszyny
-            _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar);
-
+            
             // sprawdź wszystkie możliwe wyjścia z maszyny
             List<InputOutput> outputCarWashes = actualComunicate.oComunicateCarWash.getOutputs();
             InputOutput choosenCarWashOutput = QueueSystem.chooseMoveFromMachine(outputCarWashes);
 
-            // jeśli wylosowany został 
+            // jeśli wylosowany został stan końcowy
             if (choosenCarWashOutput.CarWash == null && choosenCarWashOutput.State == "End")
             {
-                // obsługa końcowego komunikatu
+                // usuwa zadanie z maszyny
+                _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                // generuje komunikat
+                _formQueueSystemsController.addComunicateToStack(new Comunicates("OUT", actualComunicate.iComunicateTime, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
+        
             }
             else
             {
                 // jeśli jest miejsce w maszynie to obsłuż zadanie
                 if (_formQueueSystemsController.CheckFreeServicePlaces(choosenCarWashOutput.CarWash))
                 {
+                    // usuwa zadanie z maszyny
+                    _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                    // dodaje nowe do stanowiska obsługi
                     _formQueueSystemsController.AddApplicationToServicePlace(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
                 }
                 else if (_formQueueSystemsController.CheckFreePlaceInQueue(choosenCarWashOutput.CarWash))
                 {
+                    // usuwa zadanie z maszyny
+                    _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                    // dodaje nowe do kolejki
                     _formQueueSystemsController.AddApplicationToQueue(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
                     //backgroundWorkerUpdateInterface.RunWorkerAsync();
                 }
                 else
                 {
-                    _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar);
+                    // usuwa zadanie z maszyny
+                    //_formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                    // jeśli nie ma miejsc w kolejce - czekaj
+                    //_formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                    // ustaw czas czekania samochodu na zwolnienie maszyny
+                    actualComunicate.oComunicateCar.setiTimeWaitingInMachine(actualComunicate.iComunicateTime);
                 }
             }
 
