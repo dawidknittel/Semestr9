@@ -392,24 +392,40 @@ namespace Kolejki_LAB3
                  * servicePlace.ProgressBar.PerformStep();   - wywołanie czegoś takiego zapewniłoby wykonanie ustalonej jednostki czasu
                  * Także przydałaby się metoda która iterawałaby po wszystkich samochodach (zwłaszcza po tych które są aktualnie myte, bo muszę jakoś zwizualizować bieżący stan mycia samochodu
                  * 
+                 * 2014.01.07 Daniel : Sprawdź czy jest OK :)
                  */
 
-
-
+                // obsługa komunikatu
                 handleComunicate();
 
-                if (_formQueueSystemsController.iActualTime > 1000)
+                if (_formQueueSystemsController.iActualTime > 5000)
                     break;
 
 
-                // sortuj
                 this.Invoke((MethodInvoker)delegate
                 {
+                    Comunicates.sortComunicates();
                     listBoxComunicates.DataSource = null;
-                    listBoxComunicates.DataSource = QueueSystem.comunicatesUsed;
+                    listBoxComunicates.DataSource = QueueSystem.comunicates;
                     listBoxComunicates.DisplayMember = "sComunicateContent";
-                    listBoxComunicates.SelectedIndex = listBoxComunicates.Items.Count - 1;
+                    //listBoxComunicates.SelectedIndex = listBoxComunicates.Items.Count - 1;
                 });
+
+                /*
+                 *  2014.01.07 Daniel : Tutaj potrzebowałbym jeszcze obsługę komunikatów archiwalnych. Zmniejsz proszę aktualnego listboxa do rozmiaru np. 8 , zrób
+                 *  jeszcze jednego listBoxa pod spodem z opisem "Komunikaty archiwalne" z suwakiem, bo będzie ich dużo i powinno być git.
+                 *  (Zrobiłbym sam, ale mi gdzieś ten toolbar z elementami do przeciągania (Formsami?) zniknął i już nie mam siły tego szukać gdzie to było a dla Ciebie
+                 *  to pewnie 5min roboty :p)
+                 *  
+                 *  this.Invoke((MethodInvoker)delegate
+                    {
+                        Comunicates.sortComunicates();
+                        listBoxComunicates.DataSource = null;
+                        listBoxComunicates.DataSource = QueueSystem.comunicatesUsed;
+                        listBoxComunicates.DisplayMember = "sComunicateContent";
+                        //listBoxComunicates.SelectedIndex = listBoxComunicates.Items.Count - 1;
+                    });
+                 */
 
                 Thread.Sleep(500);
             }
@@ -554,6 +570,13 @@ namespace Kolejki_LAB3
         {
             Comunicates actualComunicate = Comunicates.getComunicateToHandle();
 
+            // zaznacza aktualny komunikat w listboxie
+            this.Invoke((MethodInvoker)delegate
+            {
+                listBoxComunicates.SelectedItem = actualComunicate;
+            });
+
+            
             switch (actualComunicate.sComunicateType)
             {
                 case "IN":
@@ -570,6 +593,10 @@ namespace Kolejki_LAB3
             }
         }
 
+        /// <summary>
+        /// Obsługa komunkatów 
+        /// </summary>
+        /// <param name="actualComunicate"></param>
         public void handleINComunicate(Comunicates actualComunicate)
         {
             // sprawdź gdzie auto może wyjść
@@ -588,6 +615,7 @@ namespace Kolejki_LAB3
             else
             {
                 //Dlaczego usuwa?
+                // 2013.01.07 Daniel : Bo takie było założenie. Jeśli przychodzi zadanie do systemu i w wejściowej maszynie nie ma miejsca to zadanie odpada.
                 _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
             }
         }
@@ -596,6 +624,29 @@ namespace Kolejki_LAB3
         {
             // "odczekaj" czas mycia
             actualComunicate.oComunicateCar.setPlannedWaitingTime();
+
+            // find current service place and perform progress bar steps
+            foreach (ServicePlace servicePlace in actualComunicate.oComunicateCarWash.ServicePlaces)
+            {
+                if (servicePlace.CurrentCar == actualComunicate.oComunicateCar)
+                {
+                    for (int i = 1; i <= actualComunicate.oComunicateCar.PlannedWaitingTime; i++)
+                    {
+                        this.Invoke((MethodInvoker)delegate
+                        {
+                            servicePlace.ProgressBar.Maximum = actualComunicate.oComunicateCar.PlannedWaitingTime;
+                            servicePlace.ProgressBar.Minimum = 0;
+                            servicePlace.ProgressBar.Step = 1;
+                            servicePlace.ProgressBar.PerformStep();
+                        });
+                        Thread.Sleep(100);
+                    }
+
+                    break;
+                }
+
+            }
+            
             int time = actualComunicate.oComunicateCar.PlannedWaitingTime + actualComunicate.iComunicateTime;
 
             // generuje komunikat

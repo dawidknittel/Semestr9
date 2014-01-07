@@ -367,6 +367,11 @@ namespace Kolejki_LAB3
                 if ((servicePlace.CurrentCar != null) && (servicePlace.CurrentCar.Equals(car)))
                 {
                     servicePlace.CurrentCar = null;
+
+                    View.Invoke((MethodInvoker)delegate
+                    {
+                        servicePlace.ProgressBar.Value = 0;
+                    });
                     break;
                 }
             }

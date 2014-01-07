@@ -15,6 +15,20 @@ namespace Kolejki_LAB3.Model
 
         public static int IdCounter = 0;
 
+        #region summary
+        /* Mamy różne rodzaje komunikatów:
+        * 1) IN - Wejściowy, jak samochód wchodzi do systemu
+        * 2) ADDED_TO_SERVICE_PLACE - w momencie jak samochód dodawany jest do stanowiska (myjni)
+        * 3) ADDED_TO_QUEUE - samochód dodawany do kolejki - ten komunikat nie jest obsługiwany. Samochód wchodzi z kolejki do myjni, gdy myjnia się zwolni, więc w momencie jej
+        *                      zwalniania wykonywana jest operacja przeniesienia samochodu z kolejki do myjni
+        * 4) GET_FROM_QUEUE - w momencie gdy samochód wchodzi z kolejki do stanowiska (myjni)
+        * 5) SERVICE_PLACE_FINISHED - w momencie gdy samochód schodzi ze stanowiska (myjni)
+        * 6) REMOVED_FROM_SYSTEM - samochód nie jest obsłużony (brak miejsc w wejściowym obiekcie myjni
+        * 7) OUT - samochód opuszcza system (obsłużony)
+        * 
+        */
+        #endregion
+
         public Comunicates(string sType, int iTime, Car car, CarWash carWash = null)
         {
             string MachineName = "";

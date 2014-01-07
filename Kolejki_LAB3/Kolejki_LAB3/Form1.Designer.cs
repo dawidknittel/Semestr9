@@ -216,7 +216,7 @@
             // oProgramieToolStripMenuItem1
             // 
             this.oProgramieToolStripMenuItem1.Name = "oProgramieToolStripMenuItem1";
-            this.oProgramieToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.oProgramieToolStripMenuItem1.Size = new System.Drawing.Size(141, 22);
             this.oProgramieToolStripMenuItem1.Text = "O programie";
             this.oProgramieToolStripMenuItem1.Click += new System.EventHandler(this.oProgramieToolStripMenuItem1_Click);
             // 
