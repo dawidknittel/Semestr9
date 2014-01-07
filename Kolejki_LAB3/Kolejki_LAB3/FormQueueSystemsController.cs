@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
+using Kolejki_LAB3.AboutWindow;
 using Kolejki_LAB3.Model;
 
 namespace Kolejki_LAB3
@@ -19,6 +20,7 @@ namespace Kolejki_LAB3
         private List<SystemConfiguration> systemConfiguration = null; 
         private FormQueueSystems View = null;
         private bool noFile = false;
+        private Random gen = null;
         public int iActualTime = 0;
 
         private const string FILE_NAME = "ConfigurationData.xml";
@@ -29,10 +31,23 @@ namespace Kolejki_LAB3
         public FormQueueSystemsController(FormQueueSystems view)
         {
             View = view;
+            gen = new Random();
         }
 
         #endregion
         #region Public Methods
+
+        public void CreateStatisticsWindow()
+        {
+            StatisticsWindow statisticsWindow = new StatisticsWindow();
+            statisticsWindow.ShowDialog();
+        }
+
+        public void CreateAboutBox()
+        {
+            AboutBox aboutBox = new AboutBox();
+            aboutBox.ShowDialog();
+        }
 
         /// <summary>
         /// Załadowanie podstawowych danych z pliku
@@ -437,14 +452,12 @@ namespace Kolejki_LAB3
                     case Algorithm.LIFO:
                         carId = Convert.ToInt32(carWash.ListBox.Items[carWash.ListBox.Items.Count - 1].ToString());
                         break;
-                    case Algorithm.RSS:
-                        Random gen = new Random();
+                    case Algorithm.RSS:                       
                         int choosen = gen.Next(0, carWash.ListBox.Items.Count - 1);
                         carId = Convert.ToInt32(carWash.ListBox.Items[choosen].ToString());
                         break;
                 }
             }
-
 
             Car car = Car.findCar(carId);
 

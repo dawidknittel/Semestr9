@@ -42,6 +42,10 @@
             this.zamknijToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dodajToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statystykiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.statystykiToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.oProgramieToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.oProgramieToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.errorProviderServiceTimeIntensity = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProviderStreamApplicationIntensity = new System.Windows.Forms.ErrorProvider(this.components);
             this.groupBoxComunicates = new System.Windows.Forms.GroupBox();
@@ -68,7 +72,7 @@
             this.groupBoxBasicData.Controls.Add(this.numericUpDownServiceIntensity);
             this.groupBoxBasicData.Location = new System.Drawing.Point(1038, 32);
             this.groupBoxBasicData.Name = "groupBoxBasicData";
-            this.groupBoxBasicData.Size = new System.Drawing.Size(284, 174);
+            this.groupBoxBasicData.Size = new System.Drawing.Size(337, 174);
             this.groupBoxBasicData.TabIndex = 1;
             this.groupBoxBasicData.TabStop = false;
             this.groupBoxBasicData.Text = "Podstawowe dane";
@@ -131,10 +135,12 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.plikToolStripMenuItem,
-            this.modelToolStripMenuItem});
+            this.modelToolStripMenuItem,
+            this.statystykiToolStripMenuItem,
+            this.oProgramieToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1334, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1387, 24);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -184,6 +190,36 @@
             this.dodajToolStripMenuItem.Text = "Dodaj maszynę";
             this.dodajToolStripMenuItem.Click += new System.EventHandler(this.dodajToolStripMenuItem_Click);
             // 
+            // statystykiToolStripMenuItem
+            // 
+            this.statystykiToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statystykiToolStripMenuItem1});
+            this.statystykiToolStripMenuItem.Name = "statystykiToolStripMenuItem";
+            this.statystykiToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            this.statystykiToolStripMenuItem.Text = "Statystyki";
+            // 
+            // statystykiToolStripMenuItem1
+            // 
+            this.statystykiToolStripMenuItem1.Name = "statystykiToolStripMenuItem1";
+            this.statystykiToolStripMenuItem1.Size = new System.Drawing.Size(124, 22);
+            this.statystykiToolStripMenuItem1.Text = "Statystyki";
+            this.statystykiToolStripMenuItem1.Click += new System.EventHandler(this.statystykiToolStripMenuItem1_Click);
+            // 
+            // oProgramieToolStripMenuItem
+            // 
+            this.oProgramieToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.oProgramieToolStripMenuItem1});
+            this.oProgramieToolStripMenuItem.Name = "oProgramieToolStripMenuItem";
+            this.oProgramieToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
+            this.oProgramieToolStripMenuItem.Text = "Opis";
+            // 
+            // oProgramieToolStripMenuItem1
+            // 
+            this.oProgramieToolStripMenuItem1.Name = "oProgramieToolStripMenuItem1";
+            this.oProgramieToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.oProgramieToolStripMenuItem1.Text = "O programie";
+            this.oProgramieToolStripMenuItem1.Click += new System.EventHandler(this.oProgramieToolStripMenuItem1_Click);
+            // 
             // errorProviderServiceTimeIntensity
             // 
             this.errorProviderServiceTimeIntensity.ContainerControl = this;
@@ -198,7 +234,7 @@
             this.groupBoxComunicates.Controls.Add(this.listBoxComunicates);
             this.groupBoxComunicates.Location = new System.Drawing.Point(1038, 212);
             this.groupBoxComunicates.Name = "groupBoxComunicates";
-            this.groupBoxComunicates.Size = new System.Drawing.Size(284, 437);
+            this.groupBoxComunicates.Size = new System.Drawing.Size(337, 437);
             this.groupBoxComunicates.TabIndex = 5;
             this.groupBoxComunicates.TabStop = false;
             this.groupBoxComunicates.Text = "Komunikaty";
@@ -218,7 +254,7 @@
             this.listBoxComunicates.FormattingEnabled = true;
             this.listBoxComunicates.Location = new System.Drawing.Point(15, 28);
             this.listBoxComunicates.Name = "listBoxComunicates";
-            this.listBoxComunicates.Size = new System.Drawing.Size(251, 368);
+            this.listBoxComunicates.Size = new System.Drawing.Size(316, 368);
             this.listBoxComunicates.TabIndex = 0;
             // 
             // backgroundWorkerUpdateInterface
@@ -247,7 +283,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1334, 661);
+            this.ClientSize = new System.Drawing.Size(1387, 661);
             this.Controls.Add(this.labelOutputStream);
             this.Controls.Add(this.labelInputStream);
             this.Controls.Add(this.groupBoxComunicates);
@@ -295,6 +331,10 @@
         private System.ComponentModel.BackgroundWorker backgroundWorkerUpdateInterface;
         private System.Windows.Forms.Label labelOutputStream;
         private System.Windows.Forms.Label labelInputStream;
+        private System.Windows.Forms.ToolStripMenuItem statystykiToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem statystykiToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem oProgramieToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem oProgramieToolStripMenuItem1;
 
     }
 }

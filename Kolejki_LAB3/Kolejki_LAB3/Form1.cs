@@ -159,7 +159,7 @@ namespace Kolejki_LAB3
                     // Wywołanie zdarzenia backgroundWorkerUpdateInterface_DoWork
                     backgroundWorkerUpdateInterface.RunWorkerAsync();                  
                     //LoadExample();
-                    RunSimulation();
+                    //RunSimulation();
                     //buttonStart.Text = "ZATRZYMAJ";
                 }
             }
@@ -199,7 +199,12 @@ namespace Kolejki_LAB3
                 return;
             }
 
-            LoadExample();
+            RunSimulation();
+        }
+
+        private void statystykiToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            _formQueueSystemsController.CreateStatisticsWindow();
         }
 
         #endregion
@@ -371,7 +376,6 @@ namespace Kolejki_LAB3
             //    listBoxComunicates.Items.Add("TEST2");
             //}
 
-
             while (true)
             {
                 if (!Comunicates.checkComunicateINExists())
@@ -379,16 +383,35 @@ namespace Kolejki_LAB3
                     _formQueueSystemsController.generateNewCar();
                 }
 
+                /*
+                 * 
+                 * Gdzieś musi się znajdować jakaś metoda która by iterowała czas między kolejnymi nadejściami samochodu albo coś w stylu
+                 * Coś takiego by musiało być bo jak mamy stanowisko obsługi samochodu, które jest reprezentowane przez progressbar to potrzebne
+                 * jest jakaś jednostka czasu, która symulowała jakby mycie samego samochodu. Wtedy można na progressbarze wywołać coś takiego
+                 * servicePlace.ProgressBar.Step = 1;        - jednostka o jaką przesuwa się progress mycia samochodu
+                 * servicePlace.ProgressBar.PerformStep();   - wywołanie czegoś takiego zapewniłoby wykonanie ustalonej jednostki czasu
+                 * Także przydałaby się metoda która iterawałaby po wszystkich samochodach (zwłaszcza po tych które są aktualnie myte, bo muszę jakoś zwizualizować bieżący stan mycia samochodu
+                 * 
+                 */
+
+
+
                 handleComunicate();
 
-                if (_formQueueSystemsController.iActualTime > 8000)
+                if (_formQueueSystemsController.iActualTime > 1000)
                     break;
 
 
                 // sortuj
-                listBoxComunicates.DataSource = null;
-                listBoxComunicates.DataSource = QueueSystem.comunicatesUsed;
-                listBoxComunicates.DisplayMember = "sComunicateContent";
+                this.Invoke((MethodInvoker)delegate
+                {
+                    listBoxComunicates.DataSource = null;
+                    listBoxComunicates.DataSource = QueueSystem.comunicatesUsed;
+                    listBoxComunicates.DisplayMember = "sComunicateContent";
+                    listBoxComunicates.SelectedIndex = listBoxComunicates.Items.Count - 1;
+                });
+
+                Thread.Sleep(500);
             }
         }
 
@@ -545,8 +568,6 @@ namespace Kolejki_LAB3
                     break;
 
             }
-
-            //Thread.Sleep(100);
         }
 
         public void handleINComunicate(Comunicates actualComunicate)
@@ -566,6 +587,7 @@ namespace Kolejki_LAB3
             }
             else
             {
+                //Dlaczego usuwa?
                 _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
             }
         }
@@ -630,6 +652,11 @@ namespace Kolejki_LAB3
                 }
             }
 
+        }
+
+        private void oProgramieToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            _formQueueSystemsController.CreateAboutBox();
         }
     }
 }

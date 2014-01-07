@@ -5,6 +5,14 @@ namespace Kolejki_LAB3.Model
 {
     public class CarWash
     {
+        #region Public Fields - Statistics
+
+        public decimal MeanNumberOfApplicationInQueue = 0;  //średnia liczba zgłoszeń w kolejce
+        public decimal MeanTimeApplicationInQueue = 0;      // Średnia czas przebywania zgłoszenia w kolejce 
+        public decimal RelativeSystemAbility = 0;           // Wględna zdolność obsługi systemu
+        public decimal AbsoluteSystemAbility = 0;           // Bezwględna zdolność obsługi systemu
+
+        #endregion
         #region Properties
 
         public string MachineName { get; set; }
