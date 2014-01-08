@@ -54,6 +54,9 @@
             this.backgroundWorkerUpdateInterface = new System.ComponentModel.BackgroundWorker();
             this.labelInputStream = new System.Windows.Forms.Label();
             this.labelOutputStream = new System.Windows.Forms.Label();
+            this.groupBoxArchiveComunicates = new System.Windows.Forms.GroupBox();
+            this.listBoxArchiveComunicates = new System.Windows.Forms.ListBox();
+            this.buttonClearArchiveComunicates = new System.Windows.Forms.Button();
             this.groupBoxBasicData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStreamApplicationIntensity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownServiceIntensity)).BeginInit();
@@ -61,6 +64,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderServiceTimeIntensity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderStreamApplicationIntensity)).BeginInit();
             this.groupBoxComunicates.SuspendLayout();
+            this.groupBoxArchiveComunicates.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBoxBasicData
@@ -234,14 +238,14 @@
             this.groupBoxComunicates.Controls.Add(this.listBoxComunicates);
             this.groupBoxComunicates.Location = new System.Drawing.Point(1038, 212);
             this.groupBoxComunicates.Name = "groupBoxComunicates";
-            this.groupBoxComunicates.Size = new System.Drawing.Size(337, 437);
+            this.groupBoxComunicates.Size = new System.Drawing.Size(337, 150);
             this.groupBoxComunicates.TabIndex = 5;
             this.groupBoxComunicates.TabStop = false;
-            this.groupBoxComunicates.Text = "Komunikaty";
+            this.groupBoxComunicates.Text = "Komunikaty aktulne";
             // 
             // buttonClear
             // 
-            this.buttonClear.Location = new System.Drawing.Point(191, 402);
+            this.buttonClear.Location = new System.Drawing.Point(256, 116);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(75, 23);
             this.buttonClear.TabIndex = 1;
@@ -254,7 +258,7 @@
             this.listBoxComunicates.FormattingEnabled = true;
             this.listBoxComunicates.Location = new System.Drawing.Point(15, 28);
             this.listBoxComunicates.Name = "listBoxComunicates";
-            this.listBoxComunicates.Size = new System.Drawing.Size(316, 368);
+            this.listBoxComunicates.Size = new System.Drawing.Size(316, 82);
             this.listBoxComunicates.TabIndex = 0;
             // 
             // backgroundWorkerUpdateInterface
@@ -279,11 +283,41 @@
             this.labelOutputStream.TabIndex = 7;
             this.labelOutputStream.Text = "Strumień wyjściowy";
             // 
+            // groupBoxArchiveComunicates
+            // 
+            this.groupBoxArchiveComunicates.Controls.Add(this.buttonClearArchiveComunicates);
+            this.groupBoxArchiveComunicates.Controls.Add(this.listBoxArchiveComunicates);
+            this.groupBoxArchiveComunicates.Location = new System.Drawing.Point(1038, 368);
+            this.groupBoxArchiveComunicates.Name = "groupBoxArchiveComunicates";
+            this.groupBoxArchiveComunicates.Size = new System.Drawing.Size(337, 284);
+            this.groupBoxArchiveComunicates.TabIndex = 8;
+            this.groupBoxArchiveComunicates.TabStop = false;
+            this.groupBoxArchiveComunicates.Text = "Komunikaty archiwalne";
+            // 
+            // listBoxArchiveComunicates
+            // 
+            this.listBoxArchiveComunicates.FormattingEnabled = true;
+            this.listBoxArchiveComunicates.Location = new System.Drawing.Point(15, 19);
+            this.listBoxArchiveComunicates.Name = "listBoxArchiveComunicates";
+            this.listBoxArchiveComunicates.Size = new System.Drawing.Size(316, 225);
+            this.listBoxArchiveComunicates.TabIndex = 0;
+            // 
+            // buttonClearArchiveComunicates
+            // 
+            this.buttonClearArchiveComunicates.Location = new System.Drawing.Point(256, 255);
+            this.buttonClearArchiveComunicates.Name = "buttonClearArchiveComunicates";
+            this.buttonClearArchiveComunicates.Size = new System.Drawing.Size(75, 23);
+            this.buttonClearArchiveComunicates.TabIndex = 2;
+            this.buttonClearArchiveComunicates.Text = "Wyczyść";
+            this.buttonClearArchiveComunicates.UseVisualStyleBackColor = true;
+            this.buttonClearArchiveComunicates.Click += new System.EventHandler(this.buttonClearArchiveComunicates_Click);
+            // 
             // FormQueueSystems
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1387, 661);
+            this.Controls.Add(this.groupBoxArchiveComunicates);
             this.Controls.Add(this.labelOutputStream);
             this.Controls.Add(this.labelInputStream);
             this.Controls.Add(this.groupBoxComunicates);
@@ -303,6 +337,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderServiceTimeIntensity)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderStreamApplicationIntensity)).EndInit();
             this.groupBoxComunicates.ResumeLayout(false);
+            this.groupBoxArchiveComunicates.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -335,6 +370,9 @@
         private System.Windows.Forms.ToolStripMenuItem statystykiToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem oProgramieToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem oProgramieToolStripMenuItem1;
+        private System.Windows.Forms.GroupBox groupBoxArchiveComunicates;
+        private System.Windows.Forms.Button buttonClearArchiveComunicates;
+        private System.Windows.Forms.ListBox listBoxArchiveComunicates;
 
     }
 }

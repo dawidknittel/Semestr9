@@ -181,7 +181,7 @@ namespace Kolejki_LAB3
         {
             Invoke((MethodInvoker) delegate
             {
-                listBoxComunicates.Items.Clear();
+                listBoxComunicates.DataSource = null;
             });
         }
 
@@ -416,16 +416,17 @@ namespace Kolejki_LAB3
                  *  jeszcze jednego listBoxa pod spodem z opisem "Komunikaty archiwalne" z suwakiem, bo będzie ich dużo i powinno być git.
                  *  (Zrobiłbym sam, ale mi gdzieś ten toolbar z elementami do przeciągania (Formsami?) zniknął i już nie mam siły tego szukać gdzie to było a dla Ciebie
                  *  to pewnie 5min roboty :p)
-                 *  
-                 *  this.Invoke((MethodInvoker)delegate
+                 */  
+
+                  this.Invoke((MethodInvoker)delegate
                     {
                         Comunicates.sortComunicates();
-                        listBoxComunicates.DataSource = null;
-                        listBoxComunicates.DataSource = QueueSystem.comunicatesUsed;
-                        listBoxComunicates.DisplayMember = "sComunicateContent";
-                        //listBoxComunicates.SelectedIndex = listBoxComunicates.Items.Count - 1;
+                        listBoxArchiveComunicates.DataSource = null;
+                        listBoxArchiveComunicates.DataSource = QueueSystem.comunicatesUsed;
+                        listBoxArchiveComunicates.DisplayMember = "sComunicateContent";
+                        listBoxArchiveComunicates.SelectedIndex = listBoxArchiveComunicates.Items.Count - 1;
                     });
-                 */
+                 
 
                 Thread.Sleep(500);
             }
@@ -616,6 +617,7 @@ namespace Kolejki_LAB3
             {
                 //Dlaczego usuwa?
                 // 2013.01.07 Daniel : Bo takie było założenie. Jeśli przychodzi zadanie do systemu i w wejściowej maszynie nie ma miejsca to zadanie odpada.
+                //Spoko :P
                 _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
             }
         }
@@ -708,6 +710,14 @@ namespace Kolejki_LAB3
         private void oProgramieToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             _formQueueSystemsController.CreateAboutBox();
+        }
+
+        private void buttonClearArchiveComunicates_Click(object sender, EventArgs e)
+        {
+            Invoke((MethodInvoker)delegate
+            {
+                listBoxArchiveComunicates.DataSource = null;
+            });
         }
     }
 }
