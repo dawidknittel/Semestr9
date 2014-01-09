@@ -34,12 +34,13 @@ namespace Kolejki_LAB3.Statistics
 
             if (currentCarWash != null)
             {
-                View.TextBoxMeanNumberOfApplicationInQueue.Text = Math.Round(currentCarWash.MeanNumberOfApplicationInQueue, 2).ToString();
-                View.TextBoxMeanTimeApplicationInQueue.Text = Math.Round(currentCarWash.MeanTimeApplicationInQueue, 2).ToString();
-                View.TextBoxRelativeSystemAbility.Text = Math.Round(currentCarWash.RelativeSystemAbility, 2).ToString();
-                View.TextBoxAbsoluteSystemAbility.Text = Math.Round(currentCarWash.AbsoluteSystemAbility, 2).ToString();
+                View.TextBoxMeanNumberOfApplicationInQueue.Text = Math.Round(CarWash.calculateMeanNumberOfApplicationInQueue(currentCarWash), 4).ToString();
+                View.TextBoxMeanTimeApplicationInQueue.Text = Math.Round(CarWash.calculateMeanTimeApplicationInQueue(currentCarWash), 4).ToString();
+                View.TextBoxRelativeSystemAbility.Text = Math.Round(CarWash.calculateRelativeSystemAbility(currentCarWash), 4).ToString();
+                View.TextBoxAbsoluteSystemAbility.Text = Math.Round(CarWash.calculateAbsoluteSystemAbility(currentCarWash), 4).ToString();
             }
         }
+
 
         #endregion
     }

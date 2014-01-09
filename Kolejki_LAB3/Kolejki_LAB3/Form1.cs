@@ -428,7 +428,7 @@ namespace Kolejki_LAB3
                     });
                  
 
-                Thread.Sleep(500);
+                //Thread.Sleep(500);
             }
         }
 
@@ -571,6 +571,10 @@ namespace Kolejki_LAB3
         {
             Comunicates actualComunicate = Comunicates.getComunicateToHandle();
 
+            // ustaw total time myjni
+            if (actualComunicate.oComunicateCarWash != null)
+                actualComunicate.oComunicateCarWash.timeTotal = _formQueueSystemsController.iActualTime;
+
             // zaznacza aktualny komunikat w listboxie
             this.Invoke((MethodInvoker)delegate
             {
@@ -603,7 +607,7 @@ namespace Kolejki_LAB3
             // sprawdź gdzie auto może wyjść
             List<CarWash> carWashesFromINState = QueueSystem.getPossibleMovesFromINState();
             int choosenCarWash = QueueSystem.chooseMoveFromStartState(carWashesFromINState);
-
+            
             // jeśli jest miejsce w maszynie to obsłuż zadanie
             if (_formQueueSystemsController.CheckFreeServicePlaces(QueueSystem.carWashList[choosenCarWash]))
             {
@@ -615,9 +619,11 @@ namespace Kolejki_LAB3
             }
             else
             {
-                //Dlaczego usuwa?
-                // 2013.01.07 Daniel : Bo takie było założenie. Jeśli przychodzi zadanie do systemu i w wejściowej maszynie nie ma miejsca to zadanie odpada.
-                //Spoko :P
+                // zwieksza licznik wszystkich aut myjni
+                QueueSystem.carWashList[choosenCarWash].numberOfCarsTotal++;
+                // zwieksza licznik nieobsłużonych aut myjni
+                QueueSystem.carWashList[choosenCarWash].numberOfFailed++;
+
                 _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
             }
         }
@@ -641,7 +647,7 @@ namespace Kolejki_LAB3
                             servicePlace.ProgressBar.Step = 1;
                             servicePlace.ProgressBar.PerformStep();
                         });
-                        Thread.Sleep(100);
+                        //Thread.Sleep(100);
                     }
 
                     break;

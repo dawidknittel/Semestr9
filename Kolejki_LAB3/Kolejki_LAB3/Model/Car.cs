@@ -11,6 +11,7 @@ namespace Kolejki_LAB3
         public int WaitingTime;
         public int ArrivalTime;
         public int iTimeWaitingInMachine;
+        public int iTimeInQueueStart;
 
         public double Time;     
         public double ProgressWashingTime;
@@ -29,6 +30,7 @@ namespace Kolejki_LAB3
             PlannedWaitingTime = plannedWaitingTime;
             //PlannedWaitingTime = GetWaitingTime(waitingOption);
             ArrivalTime = time;
+            iTimeInQueueStart = 0;
         }
 
         private int GetWaitingTime(WaitingTimeOption waitingOption)

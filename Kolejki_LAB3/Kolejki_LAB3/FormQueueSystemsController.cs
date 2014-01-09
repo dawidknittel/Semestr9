@@ -276,6 +276,11 @@ namespace Kolejki_LAB3
                     if (bFromQueue)
                         comTxt = "GET_FROM_QUEUE";
                     addComunicateToStack(new Comunicates(comTxt, time, car, carWash));
+
+                    // zwieksza licznik wszystkich aut myjni
+                    carWash.numberOfCarsTotal++;
+                    // zwiększenie licznika obsłużonych aut
+                    carWash.numberOfSucceeded++;
                     break;
                 }
             }
@@ -372,6 +377,7 @@ namespace Kolejki_LAB3
                     {
                         servicePlace.ProgressBar.Value = 0;
                     });
+
                     break;
                 }
             }
@@ -397,17 +403,17 @@ namespace Kolejki_LAB3
         /// <param name="car"></param>
         public void AddApplicationToQueue(CarWash carWash, Car car, int time)
         {
-            /*
-             * @Dawid : Dawid, nie wiem jak sprawdzić aktualną długość kolejki więc poprawiam to. W razie czego przywrócisz to sobi e.
-             * 
-             * int długośćkolejki = carWash.ListBox.Items.Count;    !!
-             */
-            //carWash.ListBox.BeginInvoke(new Action(() => carWash.ListBox.Items.Add(car.IdCar.ToString())));
-            //carWash.ListBox.Items.Add(car.IdCar.ToString());
+           
             View.Invoke((MethodInvoker) delegate { carWash.ListBox.Items.Add(car.IdCar.ToString()); });
 
             // generuje komunikat
             addComunicateToStack(new Comunicates("ADDED_TO_QUEUE", time, car, carWash));
+
+            // zwieksza licznik wszystkich aut czekających w kolejce w danej myjni
+            carWash.numberOfCarsInQueueTotal++;
+
+            // ustawia czas wejścia do kolejki
+            car.iTimeInQueueStart = time;
             
         }
 
@@ -429,6 +435,11 @@ namespace Kolejki_LAB3
                 }
             }
 
+            // zwieksza licznik czasu spędzonego przez wszystkie auta w kolejce
+            carWash.timeInQueueTotal = carWash.timeInQueueTotal + (time - car.iTimeInQueueStart);
+
+            // zeruje czas wejścia do kolejki danego auta
+            car.iTimeInQueueStart = 0;
 
             checkCarWashWaitingApplications(carWash, time);
 
