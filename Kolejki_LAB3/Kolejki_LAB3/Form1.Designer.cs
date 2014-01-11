@@ -55,8 +55,8 @@
             this.labelInputStream = new System.Windows.Forms.Label();
             this.labelOutputStream = new System.Windows.Forms.Label();
             this.groupBoxArchiveComunicates = new System.Windows.Forms.GroupBox();
-            this.listBoxArchiveComunicates = new System.Windows.Forms.ListBox();
             this.buttonClearArchiveComunicates = new System.Windows.Forms.Button();
+            this.listBoxArchiveComunicates = new System.Windows.Forms.ListBox();
             this.groupBoxBasicData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStreamApplicationIntensity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownServiceIntensity)).BeginInit();
@@ -294,14 +294,6 @@
             this.groupBoxArchiveComunicates.TabStop = false;
             this.groupBoxArchiveComunicates.Text = "Komunikaty archiwalne";
             // 
-            // listBoxArchiveComunicates
-            // 
-            this.listBoxArchiveComunicates.FormattingEnabled = true;
-            this.listBoxArchiveComunicates.Location = new System.Drawing.Point(15, 19);
-            this.listBoxArchiveComunicates.Name = "listBoxArchiveComunicates";
-            this.listBoxArchiveComunicates.Size = new System.Drawing.Size(316, 225);
-            this.listBoxArchiveComunicates.TabIndex = 0;
-            // 
             // buttonClearArchiveComunicates
             // 
             this.buttonClearArchiveComunicates.Location = new System.Drawing.Point(256, 255);
@@ -311,6 +303,14 @@
             this.buttonClearArchiveComunicates.Text = "Wyczyść";
             this.buttonClearArchiveComunicates.UseVisualStyleBackColor = true;
             this.buttonClearArchiveComunicates.Click += new System.EventHandler(this.buttonClearArchiveComunicates_Click);
+            // 
+            // listBoxArchiveComunicates
+            // 
+            this.listBoxArchiveComunicates.FormattingEnabled = true;
+            this.listBoxArchiveComunicates.Location = new System.Drawing.Point(15, 19);
+            this.listBoxArchiveComunicates.Name = "listBoxArchiveComunicates";
+            this.listBoxArchiveComunicates.Size = new System.Drawing.Size(316, 225);
+            this.listBoxArchiveComunicates.TabIndex = 0;
             // 
             // FormQueueSystems
             // 

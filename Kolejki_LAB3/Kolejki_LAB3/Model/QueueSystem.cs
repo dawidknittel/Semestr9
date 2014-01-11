@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.Remoting.Messaging;
 using System.Windows.Forms;
 
 namespace Kolejki_LAB3.Model
@@ -32,6 +31,8 @@ namespace Kolejki_LAB3.Model
 
         public static List<int> startPoints = new List<int>();
         public static List<int> endPoints = new List<int>();
+
+        public static Random gen = new Random();
 
         public static CarWash GetLastAddedCarWash()
         {
@@ -112,8 +113,7 @@ namespace Kolejki_LAB3.Model
         {
             if (carWashesFromINState.Count == 1)
                 return QueueSystem.carWashList.IndexOf(carWashesFromINState[0]);
-
-            Random gen = new Random();
+            
             int choosenPercent = gen.Next(1, 100);
 
             int choosenCarWash = 0;

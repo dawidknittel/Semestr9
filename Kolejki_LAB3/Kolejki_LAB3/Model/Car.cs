@@ -20,7 +20,7 @@ namespace Kolejki_LAB3
 
         public static int IdCounter = 1;
 
-        public Car(int time/*, WaitingTimeOption waitingOption*/, int plannedWaitingTime )
+        public Car(int time, int plannedWaitingTime)
         {
             IdCar = Car.IdCounter++;
 
@@ -28,34 +28,8 @@ namespace Kolejki_LAB3
             WaitingTime = 0;
             ProgressWashingTime = 0;
             PlannedWaitingTime = plannedWaitingTime;
-            //PlannedWaitingTime = GetWaitingTime(waitingOption);
             ArrivalTime = time;
             iTimeInQueueStart = 0;
-        }
-
-        private int GetWaitingTime(WaitingTimeOption waitingOption)
-        {
-            switch (waitingOption)
-            {
-                case WaitingTimeOption.Constant:
-                {
-                    return 60;
-                }
-                case WaitingTimeOption.Uniform:
-                {
-                    return Convert.ToInt32(RandomGenerator.SimpleUniformGenerator(120,120));
-                }
-                case WaitingTimeOption.Exponential:
-                {
-                    return Convert.ToInt32(TestSimpleRNG.SimpleRNG.GetExponential(60));
-                }
-                case WaitingTimeOption.Normal:
-                {
-                    return Convert.ToInt32(TestSimpleRNG.SimpleRNG.GetNormal(60, 20));
-                }
-            }
-
-            return 0;
         }
 
         public void setPlannedWaitingTime()

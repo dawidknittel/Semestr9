@@ -491,7 +491,6 @@ namespace Kolejki_LAB3
 
             // jako że jest to informacja o usunięciu zadania z systemu nie potrzebujemy jej obsługiwać
             Comunicates.markComunicateAsUsed(QueueSystem.comunicates.Count - 1);
-
         }
 
         public void Comunicate(string comunicate)

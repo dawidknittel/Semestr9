@@ -378,6 +378,7 @@ namespace Kolejki_LAB3
 
             while (true)
             {
+                //Po co ten warunek? Bo z tego co wyczytałem z kodu to chodzi o to czy w komunikatach jest jakiś który ma typ IN, jeśli tak to generuj. No przyjścia chyba powinny być zawsze generowane co nie?
                 if (!Comunicates.checkComunicateINExists())
                 {
                     _formQueueSystemsController.generateNewCar();
@@ -398,7 +399,7 @@ namespace Kolejki_LAB3
                 // obsługa komunikatu
                 handleComunicate();
 
-                if (_formQueueSystemsController.iActualTime > 5000)
+                if (_formQueueSystemsController.iActualTime > 1000)
                     break;
 
 
@@ -408,7 +409,6 @@ namespace Kolejki_LAB3
                     listBoxComunicates.DataSource = null;
                     listBoxComunicates.DataSource = QueueSystem.comunicates;
                     listBoxComunicates.DisplayMember = "sComunicateContent";
-                    //listBoxComunicates.SelectedIndex = listBoxComunicates.Items.Count - 1;
                 });
 
                 /*
@@ -428,7 +428,7 @@ namespace Kolejki_LAB3
                     });
                  
 
-                //Thread.Sleep(500);
+                Thread.Sleep(500);
             }
         }
 
@@ -634,6 +634,13 @@ namespace Kolejki_LAB3
             actualComunicate.oComunicateCar.setPlannedWaitingTime();
 
             // find current service place and perform progress bar steps
+
+            //tutaj jest coś na pewno nie tak, bo z tego wynika (co zresztą na wizualizacji zauważyłem), że w danym czasie obsługiwane przez miejsca zgłoszeń może być
+            //tylko jedno zgłoszenie aktualnie myte, a powinno być chyba tak że różne zgłoszenia mogą być równocześnie myte przez kilka maszyn
+            //chodzi o to że jeśli w maszynie 1 myje się jeden samochód, a na przykład w maszynie 2 też jest myte to powiino być tak że myte są oba na raz, a jest tak że jest tylko jedno
+            // trzeba by tutal przelecieć po wszystkich myjniach jakoś, tylko nie wiem jak to teraz wpłynie na resztę systemu, bo nie można chyba zrobić tak że myjemy teraz do końca te zgłoszenia które są w miejscach obsługi
+            // bo zawsze w czasie mycia może coś przyjść. Trzeba by to zrobić to jakoś inteligentnie.
+           
             foreach (ServicePlace servicePlace in actualComunicate.oComunicateCarWash.ServicePlaces)
             {
                 if (servicePlace.CurrentCar == actualComunicate.oComunicateCar)
@@ -696,7 +703,6 @@ namespace Kolejki_LAB3
 
                     // dodaje nowe do kolejki
                     _formQueueSystemsController.AddApplicationToQueue(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-                    //backgroundWorkerUpdateInterface.RunWorkerAsync();
                 }
                 else
                 {
