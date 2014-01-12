@@ -19,6 +19,21 @@ namespace Kolejki_LAB3
         #endregion
         #region Properties
 
+        public BackgroundWorker BackgroundWorkerUpdateInterface
+        {
+            get { return backgroundWorkerUpdateInterface; }
+        }
+
+        public ErrorProvider ErrorProviderServiceTimeIntensity
+        {
+            get { return errorProviderServiceTimeIntensity; }
+        }
+
+        public ErrorProvider ErrorProviderStreamApplicationIntensity
+        {
+            get { return errorProviderStreamApplicationIntensity; }
+        }
+
         public NumericUpDown NumericUpDownServiceIntensity
         {
             get { return numericUpDownServiceIntensity; }
@@ -32,6 +47,16 @@ namespace Kolejki_LAB3
         public ListBox ListBoxComunicates
         {
             get { return listBoxComunicates; }
+        }
+
+        public ListBox ListBoxArchiveComunicates
+        {
+            get { return listBoxArchiveComunicates; }
+        }
+
+        public Button ButtonStart
+        {
+            get { return buttonStart; }
         }
 
         #endregion
@@ -59,11 +84,6 @@ namespace Kolejki_LAB3
             ReDrawAllRelations();
         }
 
-        /// <summary>
-        /// Otworzenie okna dodawania maszyny
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void dodajToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddMachine.AddMachine form = new AddMachine.AddMachine();
@@ -75,108 +95,51 @@ namespace Kolejki_LAB3
                 _formQueueSystemsController.UpdateMachineName(QueueSystem.carWashList[QueueSystem.carWashList.Count-1]);
             }           
 
-            //sprawdzenie czy już jest 6 maszyn, jeśli tak to wyszarz przycisk dodawania
             if (QueueSystem.carWashList.Count == 6)
                 dodajToolStripMenuItem.Enabled = false;
         }
 
-        /// <summary>
-        /// Wywołanie zapisania stanu do pliku
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        private void FormQueueSystems_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (backgroundWorkerUpdateInterface.IsBusy)
+            {
+                backgroundWorkerUpdateInterface.CancelAsync();
+            }
+        }
+
         private void zapiszModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _formQueueSystemsController.SaveConfiguration();
         }
 
-        /// <summary>
-        /// Odczyt danych z pliku
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void wczytajModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _formQueueSystemsController.LoadConfiguration();
             ReDrawAllRelations();
         }
 
-        /// <summary>
-        /// Zamknięcie programu
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void zamknijToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        /// <summary>
-        /// Reakcja na zmianę wartości strumienia wejściowego
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void numericUpDownServiceIntensity_ValueChanged(object sender, EventArgs e)
         {
             QueueSystem.Lambda = int.Parse(numericUpDownServiceIntensity.Value.ToString());
             errorProviderServiceTimeIntensity.Clear();
         }
 
-        /// <summary>
-        /// Reakcja na zmianę wartości intensywaności strumienia zgłoszeń
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void numericUpDownStreamApplicationIntensity_ValueChanged(object sender, EventArgs e)
         {
             QueueSystem.Mi = int.Parse(numericUpDownStreamApplicationIntensity.Value.ToString());
             errorProviderStreamApplicationIntensity.Clear();
         }
 
-        /// <summary>
-        /// Reakcja na kliknięcie przycisku start
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            if (int.Parse(numericUpDownServiceIntensity.Value.ToString()) == 0)
-            {
-                errorProviderServiceTimeIntensity.SetError(numericUpDownServiceIntensity, "Nie wybrano wartości");
-                return;
-            }
-
-            if (int.Parse(numericUpDownStreamApplicationIntensity.Value.ToString()) == 0)
-            {
-                errorProviderStreamApplicationIntensity.SetError(numericUpDownStreamApplicationIntensity, "Nie wybrano wartośći");
-                return;
-            }
-
-            if (buttonStart.Text.Equals("START"))
-            {
-                if (QueueSystem.carWashList.Count > 0)
-                {
-                    // Wywołanie zdarzenia backgroundWorkerUpdateInterface_DoWork
-                    backgroundWorkerUpdateInterface.RunWorkerAsync();                  
-                    //LoadExample();
-                    //RunSimulation();
-                    //buttonStart.Text = "ZATRZYMAJ";
-                }
-            }
-            else if (backgroundWorkerUpdateInterface.IsBusy)
-            {
-                //Zatrzymanie symulacji, ale coś to hujowo na razie chodzi
-                backgroundWorkerUpdateInterface.WorkerSupportsCancellation = true;
-                backgroundWorkerUpdateInterface.CancelAsync();
-                buttonStart.Text = "START";
-            }
+            _formQueueSystemsController.StartPauseSimulation();
         }
 
-        /// <summary>
-        /// Obsługa wyczyszczenia okna komunikatów
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void buttonClear_Click(object sender, EventArgs e)
         {
             Invoke((MethodInvoker) delegate
@@ -185,21 +148,9 @@ namespace Kolejki_LAB3
             });
         }
 
-        /// <summary>
-        /// Zdarzenie wywołujące uruchomienie symulacji
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void backgroundWorkerUpdateInterface_DoWork(object sender, DoWorkEventArgs e)
         {
-            // Anulowanie wątku
-            if (backgroundWorkerUpdateInterface.CancellationPending)
-            {
-                e.Cancel = true;
-                return;
-            }
-
-            RunSimulation();
+            _formQueueSystemsController.RunSimulation();
         }
 
         private void statystykiToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -210,16 +161,12 @@ namespace Kolejki_LAB3
         #endregion
         #region Public Methods
 
-        /// <summary>
-        /// Tworzenie nowej maszyny w interfejcie
-        /// </summary>
-        /// <param name="currentCarWash"></param>
         public void AddMachineToInterface(CarWash currentCarWash)
         {
             GroupBox groupBoxMachine = new GroupBox();
             groupBoxMachine.Location = QueueSystem.pointsList[QueueSystem.carWashList.Count-1];
             groupBoxMachine.Name = "groupBoxMachine" + QueueSystem.carWashList.Count;
-            groupBoxMachine.Size = new System.Drawing.Size(180, 250);
+            groupBoxMachine.Size = new Size(180, 250);
             groupBoxMachine.TabIndex = 1;
             groupBoxMachine.TabStop = false;
             groupBoxMachine.Text = string.Format("Maszyna{0} - {1}", (QueueSystem.carWashList.Count), string.Format("M/M/{0}/{1}/{2}", QueueSystem.GetLastAddedCarWash().ServicePlacesLength, QueueSystem.GetLastAddedCarWash().Algorithm, QueueSystem.GetLastAddedCarWash().QueueLength));
@@ -230,19 +177,24 @@ namespace Kolejki_LAB3
             {
                 ProgressBar progressBar = new ProgressBar();
                 progressBar.Location = new Point(10, 20 + 30*i);
-                progressBar.Size = new System.Drawing.Size(100, 23);
-                progressBar.Name = "progressBar" + (i+1).ToString();
+                progressBar.Size = new Size(100, 23);
+                progressBar.Name = "progressBar" + (i+1);
                 progressBar.TabIndex = 1;
                 groupBoxMachine.Controls.Add(progressBar);
-                currentCarWash.ServicePlaces.Add(new ServicePlace() {CurrentCar = null, ProgressBar = progressBar});
+                Label newLabel = new Label();
+                newLabel.Location = new Point(120, 20 + 30*i + 5);
+                newLabel.Name = string.Format("label{0} - {1}", i+1, currentCarWash.MachineName);
+                newLabel.Text = string.Empty;
+                groupBoxMachine.Controls.Add(newLabel);
+                currentCarWash.ServicePlaces.Add(new ServicePlace() {CurrentCar = null, ProgressBar = progressBar, LabelCurrentCar = newLabel });
             }
 
             Label labelFirstMachineQueue = new Label();
 
             labelFirstMachineQueue.AutoSize = true;
-            labelFirstMachineQueue.Location = new System.Drawing.Point(10, 135);
+            labelFirstMachineQueue.Location = new Point(10, 135);
             labelFirstMachineQueue.Name = "labelFirstMachineQueue";
-            labelFirstMachineQueue.Size = new System.Drawing.Size(45, 13);
+            labelFirstMachineQueue.Size = new Size(45, 13);
             labelFirstMachineQueue.TabIndex = 1;
             labelFirstMachineQueue.Text = "Kolejka:";
 
@@ -273,162 +225,6 @@ namespace Kolejki_LAB3
             foreach (CarWash carWash in QueueSystem.carWashList)
             {
                 DrawRelations(carWash);
-            }
-        }
-
-        /// <summary>
-        /// Załadowanie przykładu działania
-        /// </summary>
-        private void LoadExample()
-        {           
-            /*
-            List<Car> cars = new List<Car>();
-            cars.Add(new Car(1, 60));
-            cars.Add(new Car(20, 60));
-            cars.Add(new Car(26, 60));
-            cars.Add(new Car(30, 60));
-            cars.Add(new Car(33, 60));
-            cars.Add(new Car(40, 60));
-            cars.Add(new Car(55, 60));
-
-            int counter = 0;
-
-            for (int i = 0; i < 50; i++)
-            {
-                if (cars[counter].ArrivalTime == i)
-                {
-                    if (_formQueueSystemsController.CheckFreeServicePlaces(QueueSystem.carWashList[0]))
-                    {
-                        //Dodanie nowego samochodu do myjni
-                        _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[0], cars[counter], 0);
-                        Invoke((MethodInvoker)delegate
-                        {
-                            listBoxComunicates.Items.Add("Wejście samochodu 1");
-                        });
-                        //Dodanie nowego samochodu do myjni
-                        _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[1], cars[1], 0);
-                        Invoke((MethodInvoker)delegate
-                        {
-                            listBoxComunicates.Items.Add("Wejście samochodu 2");
-                        });
-                    }
-                    else
-                    {
-                        //Dodanie nowego samochodu do kolejki
-                        _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[0], cars[counter], 0);
-                        Invoke((MethodInvoker)delegate
-                        {
-                            listBoxComunicates.Items.Add("Nowy samochód w kolejce");
-                        });            
-                    }
-
-                    counter++;
-                }
-
-                //Mycie w pierwszej maszynie
-                foreach (ServicePlace ServicePlace in QueueSystem.carWashList[0].ServicePlaces)
-                {
-                    if (ServicePlace.CurrentCar != null)
-                    {
-                        ServicePlace.CurrentCar.ProgressWashingTime++;
-                        _formQueueSystemsController.SetCarWashProgress(QueueSystem.carWashList[0], ServicePlace.CurrentCar);
-                    }
-                }
-
-                //Mycie w drugiej maszynie
-                foreach (ServicePlace ServicePlace in QueueSystem.carWashList[1].ServicePlaces)
-                {
-                    if (ServicePlace.CurrentCar != null)
-                    {
-                        ServicePlace.CurrentCar.ProgressWashingTime++;
-                        _formQueueSystemsController.SetCarWashProgress(QueueSystem.carWashList[1], ServicePlace.CurrentCar);
-                    }
-                }  
-
-                Thread.Sleep(500);
-            }
-            */
-            
-        }
-
-        /// <summary>
-        /// Odpalenie symulacji
-        /// </summary>
-        private void RunSimulation()
-        {
-            //QueueSystem.comunicates.Add(new Comunicates("IaN", 0));
-            //QueueSystem.comunicates.Add(new Comunicates("IaN", 1));
-            //QueueSystem.comunicates.Add(new Comunicates("IaN", 5));
-            //QueueSystem.comunicates.Add(new Comunicates("IaN", 2));
-
-
-            //Comunicates.sortComunicates();
-            //Comunicates.getComunicateToHandle();
-            //Comunicates.getComunicateToHandle();
-
-            //if (QueueSystem.comunicates.Count == 0)
-            //{
-            //    QueueSystem.comunicates.Add(new Comunicates("IN", 0));
-            //    listBoxComunicates.Items.Add(QueueSystem.comunicates[0].iComunicateTime + " - " + QueueSystem.comunicates[0].sComunicateContent);
-            //}
-            //else
-            //{
-            //    listBoxComunicates.Items.Add("TEST2");
-            //}
-
-            while (true)
-            {
-                //Po co ten warunek? Bo z tego co wyczytałem z kodu to chodzi o to czy w komunikatach jest jakiś który ma typ IN, jeśli tak to generuj. No przyjścia chyba powinny być zawsze generowane co nie?
-                if (!Comunicates.checkComunicateINExists())
-                {
-                    _formQueueSystemsController.generateNewCar();
-                }
-
-                /*
-                 * 
-                 * Gdzieś musi się znajdować jakaś metoda która by iterowała czas między kolejnymi nadejściami samochodu albo coś w stylu
-                 * Coś takiego by musiało być bo jak mamy stanowisko obsługi samochodu, które jest reprezentowane przez progressbar to potrzebne
-                 * jest jakaś jednostka czasu, która symulowała jakby mycie samego samochodu. Wtedy można na progressbarze wywołać coś takiego
-                 * servicePlace.ProgressBar.Step = 1;        - jednostka o jaką przesuwa się progress mycia samochodu
-                 * servicePlace.ProgressBar.PerformStep();   - wywołanie czegoś takiego zapewniłoby wykonanie ustalonej jednostki czasu
-                 * Także przydałaby się metoda która iterawałaby po wszystkich samochodach (zwłaszcza po tych które są aktualnie myte, bo muszę jakoś zwizualizować bieżący stan mycia samochodu
-                 * 
-                 * 2014.01.07 Daniel : Sprawdź czy jest OK :)
-                 */
-
-                // obsługa komunikatu
-                handleComunicate();
-
-                if (_formQueueSystemsController.iActualTime > 1000)
-                    break;
-
-
-                this.Invoke((MethodInvoker)delegate
-                {
-                    Comunicates.sortComunicates();
-                    listBoxComunicates.DataSource = null;
-                    listBoxComunicates.DataSource = QueueSystem.comunicates;
-                    listBoxComunicates.DisplayMember = "sComunicateContent";
-                });
-
-                /*
-                 *  2014.01.07 Daniel : Tutaj potrzebowałbym jeszcze obsługę komunikatów archiwalnych. Zmniejsz proszę aktualnego listboxa do rozmiaru np. 8 , zrób
-                 *  jeszcze jednego listBoxa pod spodem z opisem "Komunikaty archiwalne" z suwakiem, bo będzie ich dużo i powinno być git.
-                 *  (Zrobiłbym sam, ale mi gdzieś ten toolbar z elementami do przeciągania (Formsami?) zniknął i już nie mam siły tego szukać gdzie to było a dla Ciebie
-                 *  to pewnie 5min roboty :p)
-                 */  
-
-                  this.Invoke((MethodInvoker)delegate
-                    {
-                        Comunicates.sortComunicates();
-                        listBoxArchiveComunicates.DataSource = null;
-                        listBoxArchiveComunicates.DataSource = QueueSystem.comunicatesUsed;
-                        listBoxArchiveComunicates.DisplayMember = "sComunicateContent";
-                        listBoxArchiveComunicates.SelectedIndex = listBoxArchiveComunicates.Items.Count - 1;
-                    });
-                 
-
-                Thread.Sleep(500);
             }
         }
 
@@ -538,8 +334,6 @@ namespace Kolejki_LAB3
             percentLabel.Size = new Size(40, 13);
             Controls.Add(percentLabel);
         }
-
-        #endregion 
    
         public static void var_dump(object obj)
         {
@@ -567,158 +361,6 @@ namespace Kolejki_LAB3
             //QueueSystem.comunicates.ForEach(i => Console.Write("{0}\n", i));
         }
 
-        public void handleComunicate()
-        {
-            Comunicates actualComunicate = Comunicates.getComunicateToHandle();
-
-            // ustaw total time myjni
-            if (actualComunicate.oComunicateCarWash != null)
-                actualComunicate.oComunicateCarWash.timeTotal = _formQueueSystemsController.iActualTime;
-
-            // zaznacza aktualny komunikat w listboxie
-            this.Invoke((MethodInvoker)delegate
-            {
-                listBoxComunicates.SelectedItem = actualComunicate;
-            });
-
-            
-            switch (actualComunicate.sComunicateType)
-            {
-                case "IN":
-                    handleINComunicate(actualComunicate);
-                    break;
-                case "ADDED_TO_SERVICE_PLACE":
-                case "GET_FROM_QUEUE":
-                    handleAddedToServicePlaceComunicate(actualComunicate);
-                    break;
-                case "SERVICE_PLACE_FINISHED":
-                    handleServicePlaceFinishedComunicate(actualComunicate);
-                    break;
-
-            }
-        }
-
-        /// <summary>
-        /// Obsługa komunkatów 
-        /// </summary>
-        /// <param name="actualComunicate"></param>
-        public void handleINComunicate(Comunicates actualComunicate)
-        {
-            // sprawdź gdzie auto może wyjść
-            List<CarWash> carWashesFromINState = QueueSystem.getPossibleMovesFromINState();
-            int choosenCarWash = QueueSystem.chooseMoveFromStartState(carWashesFromINState);
-            
-            // jeśli jest miejsce w maszynie to obsłuż zadanie
-            if (_formQueueSystemsController.CheckFreeServicePlaces(QueueSystem.carWashList[choosenCarWash]))
-            {
-                _formQueueSystemsController.AddApplicationToServicePlace(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-            }
-            else if (_formQueueSystemsController.CheckFreePlaceInQueue(QueueSystem.carWashList[choosenCarWash]))
-            {
-                _formQueueSystemsController.AddApplicationToQueue(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-            }
-            else
-            {
-                // zwieksza licznik wszystkich aut myjni
-                QueueSystem.carWashList[choosenCarWash].numberOfCarsTotal++;
-                // zwieksza licznik nieobsłużonych aut myjni
-                QueueSystem.carWashList[choosenCarWash].numberOfFailed++;
-
-                _formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-            }
-        }
-
-        public void handleAddedToServicePlaceComunicate(Comunicates actualComunicate)
-        {
-            // "odczekaj" czas mycia
-            actualComunicate.oComunicateCar.setPlannedWaitingTime();
-
-            // find current service place and perform progress bar steps
-
-            //tutaj jest coś na pewno nie tak, bo z tego wynika (co zresztą na wizualizacji zauważyłem), że w danym czasie obsługiwane przez miejsca zgłoszeń może być
-            //tylko jedno zgłoszenie aktualnie myte, a powinno być chyba tak że różne zgłoszenia mogą być równocześnie myte przez kilka maszyn
-            //chodzi o to że jeśli w maszynie 1 myje się jeden samochód, a na przykład w maszynie 2 też jest myte to powiino być tak że myte są oba na raz, a jest tak że jest tylko jedno
-            // trzeba by tutal przelecieć po wszystkich myjniach jakoś, tylko nie wiem jak to teraz wpłynie na resztę systemu, bo nie można chyba zrobić tak że myjemy teraz do końca te zgłoszenia które są w miejscach obsługi
-            // bo zawsze w czasie mycia może coś przyjść. Trzeba by to zrobić to jakoś inteligentnie.
-           
-            foreach (ServicePlace servicePlace in actualComunicate.oComunicateCarWash.ServicePlaces)
-            {
-                if (servicePlace.CurrentCar == actualComunicate.oComunicateCar)
-                {
-                    for (int i = 1; i <= actualComunicate.oComunicateCar.PlannedWaitingTime; i++)
-                    {
-                        this.Invoke((MethodInvoker)delegate
-                        {
-                            servicePlace.ProgressBar.Maximum = actualComunicate.oComunicateCar.PlannedWaitingTime;
-                            servicePlace.ProgressBar.Minimum = 0;
-                            servicePlace.ProgressBar.Step = 1;
-                            servicePlace.ProgressBar.PerformStep();
-                        });
-                        //Thread.Sleep(100);
-                    }
-
-                    break;
-                }
-
-            }
-            
-            int time = actualComunicate.oComunicateCar.PlannedWaitingTime + actualComunicate.iComunicateTime;
-
-            // generuje komunikat
-            _formQueueSystemsController.addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
-        }
-
-        public void handleServicePlaceFinishedComunicate(Comunicates actualComunicate)
-        {
-            
-            // sprawdź wszystkie możliwe wyjścia z maszyny
-            List<InputOutput> outputCarWashes = actualComunicate.oComunicateCarWash.getOutputs();
-            InputOutput choosenCarWashOutput = QueueSystem.chooseMoveFromMachine(outputCarWashes);
-
-            // jeśli wylosowany został stan końcowy
-            if (choosenCarWashOutput.CarWash == null && choosenCarWashOutput.State == "End")
-            {
-                // usuwa zadanie z maszyny
-                _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-
-                // generuje komunikat
-                _formQueueSystemsController.addComunicateToStack(new Comunicates("OUT", actualComunicate.iComunicateTime, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
-        
-            }
-            else
-            {
-                // jeśli jest miejsce w maszynie to obsłuż zadanie
-                if (_formQueueSystemsController.CheckFreeServicePlaces(choosenCarWashOutput.CarWash))
-                {
-                    // usuwa zadanie z maszyny
-                    _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-
-                    // dodaje nowe do stanowiska obsługi
-                    _formQueueSystemsController.AddApplicationToServicePlace(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-                }
-                else if (_formQueueSystemsController.CheckFreePlaceInQueue(choosenCarWashOutput.CarWash))
-                {
-                    // usuwa zadanie z maszyny
-                    _formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-
-                    // dodaje nowe do kolejki
-                    _formQueueSystemsController.AddApplicationToQueue(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-                }
-                else
-                {
-                    // usuwa zadanie z maszyny
-                    //_formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-
-                    // jeśli nie ma miejsc w kolejce - czekaj
-                    //_formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-
-                    // ustaw czas czekania samochodu na zwolnienie maszyny
-                    actualComunicate.oComunicateCar.setiTimeWaitingInMachine(actualComunicate.iComunicateTime);
-                }
-            }
-
-        }
-
         private void oProgramieToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             _formQueueSystemsController.CreateAboutBox();
@@ -731,5 +373,7 @@ namespace Kolejki_LAB3
                 listBoxArchiveComunicates.DataSource = null;
             });
         }
+
+        #endregion
     }
 }

@@ -49,6 +49,7 @@
             this.errorProviderServiceTimeIntensity = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProviderStreamApplicationIntensity = new System.Windows.Forms.ErrorProvider(this.components);
             this.groupBoxComunicates = new System.Windows.Forms.GroupBox();
+            this.labeltimeCurrent = new System.Windows.Forms.Label();
             this.buttonClear = new System.Windows.Forms.Button();
             this.listBoxComunicates = new System.Windows.Forms.ListBox();
             this.backgroundWorkerUpdateInterface = new System.ComponentModel.BackgroundWorker();
@@ -57,6 +58,9 @@
             this.groupBoxArchiveComunicates = new System.Windows.Forms.GroupBox();
             this.buttonClearArchiveComunicates = new System.Windows.Forms.Button();
             this.listBoxArchiveComunicates = new System.Windows.Forms.ListBox();
+            this.labelTimeArchive = new System.Windows.Forms.Label();
+            this.labelComunicateCurrent = new System.Windows.Forms.Label();
+            this.labelComunicateArchive = new System.Windows.Forms.Label();
             this.groupBoxBasicData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStreamApplicationIntensity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownServiceIntensity)).BeginInit();
@@ -234,6 +238,8 @@
             // 
             // groupBoxComunicates
             // 
+            this.groupBoxComunicates.Controls.Add(this.labelComunicateCurrent);
+            this.groupBoxComunicates.Controls.Add(this.labeltimeCurrent);
             this.groupBoxComunicates.Controls.Add(this.buttonClear);
             this.groupBoxComunicates.Controls.Add(this.listBoxComunicates);
             this.groupBoxComunicates.Location = new System.Drawing.Point(1038, 212);
@@ -241,7 +247,16 @@
             this.groupBoxComunicates.Size = new System.Drawing.Size(337, 150);
             this.groupBoxComunicates.TabIndex = 5;
             this.groupBoxComunicates.TabStop = false;
-            this.groupBoxComunicates.Text = "Komunikaty aktulne";
+            this.groupBoxComunicates.Text = "Komunikaty aktualne";
+            // 
+            // labeltimeCurrent
+            // 
+            this.labeltimeCurrent.AutoSize = true;
+            this.labeltimeCurrent.Location = new System.Drawing.Point(12, 25);
+            this.labeltimeCurrent.Name = "labeltimeCurrent";
+            this.labeltimeCurrent.Size = new System.Drawing.Size(30, 13);
+            this.labeltimeCurrent.TabIndex = 2;
+            this.labeltimeCurrent.Text = "Czas";
             // 
             // buttonClear
             // 
@@ -256,9 +271,9 @@
             // listBoxComunicates
             // 
             this.listBoxComunicates.FormattingEnabled = true;
-            this.listBoxComunicates.Location = new System.Drawing.Point(15, 28);
+            this.listBoxComunicates.Location = new System.Drawing.Point(15, 41);
             this.listBoxComunicates.Name = "listBoxComunicates";
-            this.listBoxComunicates.Size = new System.Drawing.Size(316, 82);
+            this.listBoxComunicates.Size = new System.Drawing.Size(316, 69);
             this.listBoxComunicates.TabIndex = 0;
             // 
             // backgroundWorkerUpdateInterface
@@ -285,6 +300,8 @@
             // 
             // groupBoxArchiveComunicates
             // 
+            this.groupBoxArchiveComunicates.Controls.Add(this.labelComunicateArchive);
+            this.groupBoxArchiveComunicates.Controls.Add(this.labelTimeArchive);
             this.groupBoxArchiveComunicates.Controls.Add(this.buttonClearArchiveComunicates);
             this.groupBoxArchiveComunicates.Controls.Add(this.listBoxArchiveComunicates);
             this.groupBoxArchiveComunicates.Location = new System.Drawing.Point(1038, 368);
@@ -307,10 +324,37 @@
             // listBoxArchiveComunicates
             // 
             this.listBoxArchiveComunicates.FormattingEnabled = true;
-            this.listBoxArchiveComunicates.Location = new System.Drawing.Point(15, 19);
+            this.listBoxArchiveComunicates.Location = new System.Drawing.Point(15, 45);
             this.listBoxArchiveComunicates.Name = "listBoxArchiveComunicates";
-            this.listBoxArchiveComunicates.Size = new System.Drawing.Size(316, 225);
+            this.listBoxArchiveComunicates.Size = new System.Drawing.Size(316, 199);
             this.listBoxArchiveComunicates.TabIndex = 0;
+            // 
+            // labelTimeArchive
+            // 
+            this.labelTimeArchive.AutoSize = true;
+            this.labelTimeArchive.Location = new System.Drawing.Point(15, 29);
+            this.labelTimeArchive.Name = "labelTimeArchive";
+            this.labelTimeArchive.Size = new System.Drawing.Size(30, 13);
+            this.labelTimeArchive.TabIndex = 3;
+            this.labelTimeArchive.Text = "Czas";
+            // 
+            // labelComunicateCurrent
+            // 
+            this.labelComunicateCurrent.AutoSize = true;
+            this.labelComunicateCurrent.Location = new System.Drawing.Point(58, 25);
+            this.labelComunicateCurrent.Name = "labelComunicateCurrent";
+            this.labelComunicateCurrent.Size = new System.Drawing.Size(98, 13);
+            this.labelComunicateCurrent.TabIndex = 3;
+            this.labelComunicateCurrent.Text = "Nazwa komunikatu";
+            // 
+            // labelComunicateArchive
+            // 
+            this.labelComunicateArchive.AutoSize = true;
+            this.labelComunicateArchive.Location = new System.Drawing.Point(58, 29);
+            this.labelComunicateArchive.Name = "labelComunicateArchive";
+            this.labelComunicateArchive.Size = new System.Drawing.Size(98, 13);
+            this.labelComunicateArchive.TabIndex = 4;
+            this.labelComunicateArchive.Text = "Nazwa komunikatu";
             // 
             // FormQueueSystems
             // 
@@ -327,6 +371,7 @@
             this.MaximizeBox = false;
             this.Name = "FormQueueSystems";
             this.Text = "Systemy kolejkowe";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormQueueSystems_FormClosing);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.FormQueueSystems_Paint);
             this.groupBoxBasicData.ResumeLayout(false);
             this.groupBoxBasicData.PerformLayout();
@@ -337,7 +382,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderServiceTimeIntensity)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProviderStreamApplicationIntensity)).EndInit();
             this.groupBoxComunicates.ResumeLayout(false);
+            this.groupBoxComunicates.PerformLayout();
             this.groupBoxArchiveComunicates.ResumeLayout(false);
+            this.groupBoxArchiveComunicates.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -373,6 +420,10 @@
         private System.Windows.Forms.GroupBox groupBoxArchiveComunicates;
         private System.Windows.Forms.Button buttonClearArchiveComunicates;
         private System.Windows.Forms.ListBox listBoxArchiveComunicates;
+        private System.Windows.Forms.Label labeltimeCurrent;
+        private System.Windows.Forms.Label labelComunicateArchive;
+        private System.Windows.Forms.Label labelTimeArchive;
+        private System.Windows.Forms.Label labelComunicateCurrent;
 
     }
 }

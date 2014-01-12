@@ -4,6 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
@@ -22,6 +23,8 @@ namespace Kolejki_LAB3
         private bool noFile = false;
         private Random gen = null;
         public int iActualTime = 0;
+        private bool pause = false;
+        private bool simulationStarted = false;
 
         private const string FILE_NAME = "ConfigurationData.xml";
 
@@ -49,9 +52,6 @@ namespace Kolejki_LAB3
             aboutBox.ShowDialog();
         }
 
-        /// <summary>
-        /// Załadowanie podstawowych danych z pliku
-        /// </summary>
         public void LoadBasicConfiguration()
         {
             try
@@ -72,13 +72,263 @@ namespace Kolejki_LAB3
            
         }
 
-         /// <summary>
-         /// Załadowanie maszyn z pliku
-         /// </summary>
+        public void StartPauseSimulation()
+        {
+            if (int.Parse(View.NumericUpDownServiceIntensity.Value.ToString()) == 0)
+            {
+                View.ErrorProviderServiceTimeIntensity.SetError(View.NumericUpDownServiceIntensity, "Nie wybrano wartości");
+                return;
+            }
+
+            if (int.Parse(View.NumericUpDownStreamApplicationIntensity.Value.ToString()) == 0)
+            {
+                View.ErrorProviderStreamApplicationIntensity.SetError(View.NumericUpDownStreamApplicationIntensity, "Nie wybrano wartośći");
+                return;
+            }
+
+            if (View.ButtonStart.Text.Equals("START"))
+            {
+                if (QueueSystem.carWashList.Count > 0)
+                {
+                    if (!simulationStarted)
+                    {
+                        View.BackgroundWorkerUpdateInterface.RunWorkerAsync();
+                    }
+
+                    View.Invoke((MethodInvoker)delegate { pause = false; });
+                    simulationStarted = true;
+                    View.ButtonStart.Text = "ZATRZYMAJ";
+                }
+            }
+            else if (View.BackgroundWorkerUpdateInterface.IsBusy)
+            {
+                View.Invoke((MethodInvoker)delegate { pause = true; });
+                View.ButtonStart.Text = "START";
+            }
+        }
+
+        public void RunSimulation()
+        {
+            //QueueSystem.comunicates.Add(new Comunicates("IaN", 0));
+            //QueueSystem.comunicates.Add(new Comunicates("IaN", 1));
+            //QueueSystem.comunicates.Add(new Comunicates("IaN", 5));
+            //QueueSystem.comunicates.Add(new Comunicates("IaN", 2));
+
+
+            //Comunicates.sortComunicates();
+            //Comunicates.getComunicateToHandle();
+            //Comunicates.getComunicateToHandle();
+
+            //if (QueueSystem.comunicates.Count == 0)
+            //{
+            //    QueueSystem.comunicates.Add(new Comunicates("IN", 0));
+            //    listBoxComunicates.Items.Add(QueueSystem.comunicates[0].iComunicateTime + " - " + QueueSystem.comunicates[0].sComunicateContent);
+            //}
+            //else
+            //{
+            //    listBoxComunicates.Items.Add("TEST2");
+            //}
+
+            while (true)
+            {
+                if (pause)
+                {
+                    Thread.Sleep(100);
+                }
+                else
+                {
+
+                    //Po co ten warunek? Bo z tego co wyczytałem z kodu to chodzi o to czy w komunikatach jest jakiś który ma typ IN, jeśli tak to generuj. No przyjścia chyba powinny być zawsze generowane co nie?
+                    if (!Comunicates.checkComunicateINExists())
+                    {
+                        generateNewCar();
+                    }
+
+                    // obsługa komunikatu
+                    handleComunicate();
+
+                    if (iActualTime > 10000)
+                        break;
+
+
+                    View.Invoke((MethodInvoker)delegate
+                    {
+                        Comunicates.sortComunicates();
+                        View.ListBoxComunicates.DataSource = null;
+                        View.ListBoxComunicates.DataSource = QueueSystem.comunicates;
+                        View.ListBoxComunicates.DisplayMember = "sComunicateContent";
+                    });
+
+                    View.Invoke((MethodInvoker)delegate
+                    {
+                        Comunicates.sortComunicates();
+                        View.ListBoxArchiveComunicates.DataSource = null;
+                        View.ListBoxArchiveComunicates.DataSource = QueueSystem.comunicatesUsed;
+                        View.ListBoxArchiveComunicates.DisplayMember = "sComunicateContent";
+                        View.ListBoxArchiveComunicates.SelectedIndex = View.ListBoxArchiveComunicates.Items.Count - 1;
+                    });
+
+                    Thread.Sleep(500);
+                }
+            }
+        }
+
+        public void handleComunicate()
+        {
+            Comunicates actualComunicate = Comunicates.getComunicateToHandle();
+
+            // ustaw total time myjni
+            if (actualComunicate.oComunicateCarWash != null)
+                actualComunicate.oComunicateCarWash.timeTotal = iActualTime;
+
+            // zaznacza aktualny komunikat w listboxie
+            View.Invoke((MethodInvoker)delegate
+            {
+                View.ListBoxComunicates.SelectedItem = actualComunicate;
+            });
+
+
+            switch (actualComunicate.sComunicateType)
+            {
+                case "IN":
+                    handleINComunicate(actualComunicate);
+                    break;
+                case "ADDED_TO_SERVICE_PLACE":
+                case "GET_FROM_QUEUE":
+                    handleAddedToServicePlaceComunicate(actualComunicate);
+                    break;
+                case "SERVICE_PLACE_FINISHED":
+                    handleServicePlaceFinishedComunicate(actualComunicate);
+                    break;
+
+            }
+        }
+
+        /// <summary>
+        /// Obsługa komunkatów 
+        /// </summary>
+        /// <param name="actualComunicate"></param>
+        public void handleINComunicate(Comunicates actualComunicate)
+        {
+            // sprawdź gdzie auto może wyjść
+            List<CarWash> carWashesFromINState = QueueSystem.getPossibleMovesFromINState();
+            int choosenCarWash = QueueSystem.chooseMoveFromStartState(carWashesFromINState);
+
+            // jeśli jest miejsce w maszynie to obsłuż zadanie
+            if (CheckFreeServicePlaces(QueueSystem.carWashList[choosenCarWash]))
+            {
+                AddApplicationToServicePlace(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+            }
+            else if (CheckFreePlaceInQueue(QueueSystem.carWashList[choosenCarWash]))
+            {
+                AddApplicationToQueue(QueueSystem.carWashList[choosenCarWash], actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+            }
+            else
+            {
+                // zwieksza licznik wszystkich aut myjni
+                QueueSystem.carWashList[choosenCarWash].numberOfCarsTotal++;
+                // zwieksza licznik nieobsłużonych aut myjni
+                QueueSystem.carWashList[choosenCarWash].numberOfFailed++;
+
+                RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+            }
+        }
+
+        public void handleAddedToServicePlaceComunicate(Comunicates actualComunicate)
+        {
+            // "odczekaj" czas mycia
+            actualComunicate.oComunicateCar.setPlannedWaitingTime();
+
+            // find current service place and perform progress bar steps
+
+            //tutaj jest coś na pewno nie tak, bo z tego wynika (co zresztą na wizualizacji zauważyłem), że w danym czasie obsługiwane przez miejsca zgłoszeń może być
+            //tylko jedno zgłoszenie aktualnie myte, a powinno być chyba tak że różne zgłoszenia mogą być równocześnie myte przez kilka maszyn
+            //chodzi o to że jeśli w maszynie 1 myje się jeden samochód, a na przykład w maszynie 2 też jest myte to powiino być tak że myte są oba na raz, a jest tak że jest tylko jedno
+            // trzeba by tutal przelecieć po wszystkich myjniach jakoś, tylko nie wiem jak to teraz wpłynie na resztę systemu, bo nie można chyba zrobić tak że myjemy teraz do końca te zgłoszenia które są w miejscach obsługi
+            // bo zawsze w czasie mycia może coś przyjść. Trzeba by to zrobić to jakoś inteligentnie.
+
+            foreach (ServicePlace servicePlace in actualComunicate.oComunicateCarWash.ServicePlaces)
+            {
+                if (servicePlace.CurrentCar == actualComunicate.oComunicateCar)
+                {
+                    for (int i = 1; i <= actualComunicate.oComunicateCar.PlannedWaitingTime; i++)
+                    {
+                        View.Invoke((MethodInvoker)delegate
+                        {
+                            servicePlace.ProgressBar.Maximum = actualComunicate.oComunicateCar.PlannedWaitingTime;
+                            servicePlace.ProgressBar.Minimum = 0;
+                            servicePlace.ProgressBar.Step = 1;
+                            servicePlace.ProgressBar.PerformStep();
+                        });
+                    }
+
+                    break;
+                }
+
+            }
+
+            int time = actualComunicate.oComunicateCar.PlannedWaitingTime + actualComunicate.iComunicateTime;
+
+            // generuje komunikat
+            addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
+        }
+
+        public void handleServicePlaceFinishedComunicate(Comunicates actualComunicate)
+        {
+
+            // sprawdź wszystkie możliwe wyjścia z maszyny
+            List<InputOutput> outputCarWashes = actualComunicate.oComunicateCarWash.getOutputs();
+            InputOutput choosenCarWashOutput = QueueSystem.chooseMoveFromMachine(outputCarWashes);
+
+            // jeśli wylosowany został stan końcowy
+            if (choosenCarWashOutput.CarWash == null && choosenCarWashOutput.State == "End")
+            {
+                // usuwa zadanie z maszyny
+                RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                // generuje komunikat
+                addComunicateToStack(new Comunicates("OUT", actualComunicate.iComunicateTime, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
+
+            }
+            else
+            {
+                // jeśli jest miejsce w maszynie to obsłuż zadanie
+                if (CheckFreeServicePlaces(choosenCarWashOutput.CarWash))
+                {
+                    // usuwa zadanie z maszyny
+                    RemoveApplicationFromServicePlace(
+                        actualComunicate.oComunicateCarWash,
+                        actualComunicate.oComunicateCar,
+                        actualComunicate.iComunicateTime);
+
+                    // dodaje nowe do stanowiska obsługi
+                    AddApplicationToServicePlace(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+                }
+                else if (CheckFreePlaceInQueue(choosenCarWashOutput.CarWash))
+                {
+                    // usuwa zadanie z maszyny
+                    RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                    // dodaje nowe do kolejki
+                    AddApplicationToQueue(choosenCarWashOutput.CarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+                }
+                else
+                {
+                    // usuwa zadanie z maszyny
+                    //_formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                    // jeśli nie ma miejsc w kolejce - czekaj
+                    //_formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
+
+                    // ustaw czas czekania samochodu na zwolnienie maszyny
+                    actualComunicate.oComunicateCar.setiTimeWaitingInMachine(actualComunicate.iComunicateTime);
+                }
+            }
+
+        }
+
         public void LoadSystems()
         {
-            //systemConfiguration = new List<SystemConfiguration>();
-
             try
             {
                 XmlDocument configurationData = new XmlDocument();
@@ -269,6 +519,7 @@ namespace Kolejki_LAB3
                         servicePlace.ProgressBar.Minimum = 0;
                         servicePlace.ProgressBar.Step = 1;
                         servicePlace.ProgressBar.PerformStep();
+                        servicePlace.LabelCurrentCar.Text = car.IdCar.ToString();
                     });
 
                     // generuje komunikat
@@ -371,11 +622,12 @@ namespace Kolejki_LAB3
             {
                 if ((servicePlace.CurrentCar != null) && (servicePlace.CurrentCar.Equals(car)))
                 {
-                    servicePlace.CurrentCar = null;
+                    servicePlace.CurrentCar = null;                  
 
                     View.Invoke((MethodInvoker)delegate
                     {
                         servicePlace.ProgressBar.Value = 0;
+                        servicePlace.LabelCurrentCar.Text = string.Empty;
                     });
 
                     break;

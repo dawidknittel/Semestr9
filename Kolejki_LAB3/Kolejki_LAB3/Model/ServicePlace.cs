@@ -6,6 +6,7 @@ namespace Kolejki_LAB3.Model
     {
         private Car currentCar = null;
         private ProgressBar progressBar = null;
+        private Label labelCurrentCar = null;
 
         public Car CurrentCar
         {
@@ -17,6 +18,12 @@ namespace Kolejki_LAB3.Model
         {
             get { return progressBar; }
             set { progressBar = value; }
-        }      
+        }
+
+        public Label LabelCurrentCar
+        {
+            get { return labelCurrentCar; }
+            set { labelCurrentCar = value; }
+        }
     }
 }
