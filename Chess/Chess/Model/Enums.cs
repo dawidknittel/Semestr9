@@ -92,6 +92,12 @@
         Long
     }
 
+    public enum CastlingMode
+    {
+        Castling_short,
+        Castling_long
+    }
+
     public enum WindowExitStatus
     {
         Canceled,

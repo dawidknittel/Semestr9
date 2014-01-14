@@ -385,33 +385,39 @@ namespace Chess.MainWindow
 
         private void CheckIfReadyToMakeMove()
         {
-            if (parametersCounter == 5 || coordinatesCounter == 4)
-            {
-                ParseMove(labelResult.Content.ToString());
-
-                Int16 rowStart = (Int16)(7 - Convert.ToInt16(labelRowStart.Content.ToString()[labelRowStart.Content.ToString().Length - 1].ToString()));
-                Int16 columnStart = Convert.ToInt16(labelColumnStart.Content.ToString()[labelColumnStart.Content.ToString().Length - 1].ToString());
-                Int16 rowDestination = (Int16)(7 - Convert.ToInt16(labelRowDestination.Content.ToString()[labelRowStart.Content.ToString().Length - 1].ToString()));
-                Int16 columnDestination = Convert.ToInt16(labelColumnDestination.Content.ToString()[labelColumnStart.Content.ToString().Length - 1].ToString());
-
-                ChessBoardField chessBoardField = ChessBoard.GetChessBoardField(rowStart, columnStart);
-
-                if (chessBoardField != null && chessBoardField.field != null)
+            if (parametersCounter == 5 || coordinatesCounter == 4 || labelResult.Content.ToString().Equals("Castle long") || labelResult.Content.ToString().Equals("Castle short"))
+            {               
+                if (!(labelResult.Content.ToString().Equals("Castle long") || labelResult.Content.ToString().Equals("Castle short")))
                 {
-                    Piece piece = Piece.FindPiece(chessBoardField.field);
-                    if (piece != null)
-                    {
-                        ChessBoard.MakeSelection(chessBoardField.field);
-                        ChessBoardField chessBoardFieldFirstLocalization = chessBoardField;
-                        chessBoardField = ChessBoard.GetChessBoardField(rowDestination, columnDestination);
-                        if (chessBoardField != null && chessBoardField.field != null)
-                            ChessBoard.MakeSelection(ChessBoard.GetChessBoardField(rowDestination, columnDestination).field);
-                        else
-                            ChessBoard.MakeSelection(chessBoardFieldFirstLocalization.field);
+                    ParseMove(labelResult.Content.ToString());
 
+                    Int16 rowStart = (Int16)(7 - Convert.ToInt16(labelRowStart.Content.ToString()[labelRowStart.Content.ToString().Length - 1].ToString()));
+                    Int16 columnStart = Convert.ToInt16(labelColumnStart.Content.ToString()[labelColumnStart.Content.ToString().Length - 1].ToString());
+                    Int16 rowDestination = (Int16)(7 - Convert.ToInt16(labelRowDestination.Content.ToString()[labelRowStart.Content.ToString().Length - 1].ToString()));
+                    Int16 columnDestination = Convert.ToInt16(labelColumnDestination.Content.ToString()[labelColumnStart.Content.ToString().Length - 1].ToString());
+
+                    ChessBoardField chessBoardField = ChessBoard.GetChessBoardField(rowStart, columnStart);
+
+                    if (chessBoardField != null && chessBoardField.field != null)
+                    {
+                        Piece piece = Piece.FindPiece(chessBoardField.field);
+                        if (piece != null)
+                        {
+                            ChessBoard.MakeSelection(chessBoardField.field);
+                            ChessBoardField chessBoardFieldFirstLocalization = chessBoardField;
+                            chessBoardField = ChessBoard.GetChessBoardField(rowDestination, columnDestination);
+                            if (chessBoardField != null && chessBoardField.field != null)
+                                ChessBoard.MakeSelection(ChessBoard.GetChessBoardField(rowDestination, columnDestination).field);
+                            else
+                                ChessBoard.MakeSelection(chessBoardFieldFirstLocalization.field);
+
+                        }
                     }
                 }
-
+                else
+                {
+                    MakeCastling(labelResult.Content.ToString());
+                }
 
                 textBoxMove.TextChanged -= textBoxMove_TextChanged;
                 ClearCoordinates();
@@ -940,7 +946,7 @@ namespace Chess.MainWindow
             ClearCoordinates();
         }
 
-        private void textBoxMove_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void textBoxMove_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Back || e.Key == Key.Delete)
             {
@@ -974,6 +980,22 @@ namespace Chess.MainWindow
         public void EnableTextMove(bool state)
         {
             textBoxMove.IsEnabled = state;
+        }
+
+        private void MakeCastling(string mode)
+        {
+            ChessBoard.MakeSelection(WhitePiece.turn ? WhitePiece.WhiteKing.CurrentField : BlackPiece.BlackKing.CurrentField);
+
+            if (WhitePiece.turn)
+            {
+                ChessBoard.MakeSelection(mode.Equals("Castle long") ? ChessBoard.GetField(7, 2) : ChessBoard.GetField(7, 6));
+            }
+            else
+            {
+                ChessBoard.MakeSelection(mode.Equals("Castle long") ? ChessBoard.GetField(0, 2) : ChessBoard.GetField(0, 6));
+            }
+
+            ChessBoard.DeSelectAvailableAllPieces();
         }
 
         #endregion

@@ -444,7 +444,7 @@
             <Label x:Name="labelG" Content="G" HorizontalAlignment="Left" Margin="532,655,0,0" VerticalAlignment="Top" FontSize="30"/>
             <Label x:Name="labelH" Content="H" HorizontalAlignment="Left" Margin="607,655,0,0" VerticalAlignment="Top" FontSize="30"/>
         </Grid>
-        <Grid Grid.Row="0" Grid.Column="2" Margin="0,29,0,-45">
+        <Grid Grid.Row="0" Grid.Column="2" Margin="0,29,0,10">
 
             <GroupBox x:Name="groupBox" Header="Gracz1" HorizontalAlignment="Left" Margin="10,497,0,0" VerticalAlignment="Top" Width="251" Height="147">
                 <Grid>

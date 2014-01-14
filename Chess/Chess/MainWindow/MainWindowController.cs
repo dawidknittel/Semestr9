@@ -134,11 +134,5 @@ namespace Chess.MainWindow
         }
 
         #endregion
-        #region Private Methods
-
-        
-
-        #endregion
-
     }
 }
