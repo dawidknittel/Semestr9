@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             this.numericUpDownServicePlacesNumber = new System.Windows.Forms.NumericUpDown();
             this.labelNewMachine = new System.Windows.Forms.Label();
-            this.labelMM = new System.Windows.Forms.Label();
             this.labeLNumerOfitems = new System.Windows.Forms.Label();
             this.labelSlash = new System.Windows.Forms.Label();
             this.labelAlgorithm = new System.Windows.Forms.Label();
@@ -98,19 +97,10 @@
             this.labelNewMachine.TabIndex = 1;
             this.labelNewMachine.Text = "Nowa maszyna:";
             // 
-            // labelMM
-            // 
-            this.labelMM.AutoSize = true;
-            this.labelMM.Location = new System.Drawing.Point(100, 21);
-            this.labelMM.Name = "labelMM";
-            this.labelMM.Size = new System.Drawing.Size(35, 13);
-            this.labelMM.TabIndex = 2;
-            this.labelMM.Text = "M/M/";
-            // 
             // labeLNumerOfitems
             // 
             this.labeLNumerOfitems.AutoSize = true;
-            this.labeLNumerOfitems.Location = new System.Drawing.Point(131, 21);
+            this.labeLNumerOfitems.Location = new System.Drawing.Point(114, 21);
             this.labeLNumerOfitems.Name = "labeLNumerOfitems";
             this.labeLNumerOfitems.Size = new System.Drawing.Size(13, 13);
             this.labeLNumerOfitems.TabIndex = 3;
@@ -119,7 +109,7 @@
             // labelSlash
             // 
             this.labelSlash.AutoSize = true;
-            this.labelSlash.Location = new System.Drawing.Point(141, 21);
+            this.labelSlash.Location = new System.Drawing.Point(124, 21);
             this.labelSlash.Name = "labelSlash";
             this.labelSlash.Size = new System.Drawing.Size(12, 13);
             this.labelSlash.TabIndex = 4;
@@ -187,7 +177,7 @@
             // labelSelectedAlgorithm
             // 
             this.labelSelectedAlgorithm.AutoSize = true;
-            this.labelSelectedAlgorithm.Location = new System.Drawing.Point(150, 21);
+            this.labelSelectedAlgorithm.Location = new System.Drawing.Point(133, 21);
             this.labelSelectedAlgorithm.Name = "labelSelectedAlgorithm";
             this.labelSelectedAlgorithm.Size = new System.Drawing.Size(46, 13);
             this.labelSelectedAlgorithm.TabIndex = 10;
@@ -196,7 +186,7 @@
             // labelSlash2
             // 
             this.labelSlash2.AutoSize = true;
-            this.labelSlash2.Location = new System.Drawing.Point(202, 21);
+            this.labelSlash2.Location = new System.Drawing.Point(185, 21);
             this.labelSlash2.Name = "labelSlash2";
             this.labelSlash2.Size = new System.Drawing.Size(12, 13);
             this.labelSlash2.TabIndex = 11;
@@ -205,11 +195,11 @@
             // labelQueueLenghtPattern
             // 
             this.labelQueueLenghtPattern.AutoSize = true;
-            this.labelQueueLenghtPattern.Location = new System.Drawing.Point(220, 21);
+            this.labelQueueLenghtPattern.Location = new System.Drawing.Point(203, 21);
             this.labelQueueLenghtPattern.Name = "labelQueueLenghtPattern";
             this.labelQueueLenghtPattern.Size = new System.Drawing.Size(13, 13);
             this.labelQueueLenghtPattern.TabIndex = 12;
-            this.labelQueueLenghtPattern.Text = "1";
+            this.labelQueueLenghtPattern.Text = "2";
             this.labelQueueLenghtPattern.UseWaitCursor = true;
             // 
             // buttonOK
@@ -373,7 +363,6 @@
             this.Controls.Add(this.labelAlgorithm);
             this.Controls.Add(this.labelSlash);
             this.Controls.Add(this.labeLNumerOfitems);
-            this.Controls.Add(this.labelMM);
             this.Controls.Add(this.labelNewMachine);
             this.Controls.Add(this.numericUpDownServicePlacesNumber);
             this.Name = "AddMachine";
@@ -393,7 +382,6 @@
 
         private System.Windows.Forms.NumericUpDown numericUpDownServicePlacesNumber;
         private System.Windows.Forms.Label labelNewMachine;
-        private System.Windows.Forms.Label labelMM;
         private System.Windows.Forms.Label labeLNumerOfitems;
         private System.Windows.Forms.Label labelSlash;
         private System.Windows.Forms.Label labelAlgorithm;

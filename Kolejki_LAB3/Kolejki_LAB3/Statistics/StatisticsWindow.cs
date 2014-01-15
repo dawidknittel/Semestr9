@@ -13,6 +13,11 @@ namespace Kolejki_LAB3
         #endregion
         #region Properties
 
+        public StatisticsController StatisticsController
+        {
+            get { return _StatisticsController; }
+        }
+
         public ComboBox ComboBoxMachinseName
         {
             get { return comboBoxMachinesName; }
@@ -59,7 +64,7 @@ namespace Kolejki_LAB3
 
         private void comboBoxMachinesName_SelectedValueChanged(object sender, EventArgs e)
         {
-           _StatisticsController.ShowStatistics();
+            _StatisticsController.ShowStatistics(comboBoxMachinesName.Text);
         }
 
         #endregion

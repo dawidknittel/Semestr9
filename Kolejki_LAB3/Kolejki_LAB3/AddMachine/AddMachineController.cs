@@ -105,7 +105,7 @@ namespace Kolejki_LAB3.AddMachine
         {
             decimal calculatedPercent = 0;
 
-            if (inputOutputName.Equals(SystemState.Start.ToString()) || inputOutputName.Equals(SystemState.End.ToString()))
+            if (inputOutputName.Equals(SystemState.Start.ToString()))
             {
                     foreach (CarWash carWash in QueueSystem.carWashList)
                     {
@@ -120,14 +120,24 @@ namespace Kolejki_LAB3.AddMachine
             }
             else
             {
-                CarWash foundCarWash = CarWash.FindCarWash(inputOutputName);
-
-                List<InputOutput> inputOutputList = input ? foundCarWash.OutputSystems : foundCarWash.InputSystems;
-
-                foreach (InputOutput inputOutput in inputOutputList)
+                if (inputOutputName.Equals(SystemState.End.ToString()))
                 {
-                    calculatedPercent += inputOutput.Percent;
+                    foreach (InputOutput inputOutput in  CurrentCarWash.OutputSystems)
+                    {
+                        calculatedPercent += inputOutput.Percent;
+                    }
                 }
+                else
+                {
+                    CarWash foundCarWash = CarWash.FindCarWash(inputOutputName);
+
+                    List<InputOutput> inputOutputList = input ? foundCarWash.OutputSystems : foundCarWash.InputSystems;
+
+                    foreach (InputOutput inputOutput in inputOutputList)
+                    {
+                        calculatedPercent += inputOutput.Percent;
+                    }
+                }          
             }                  
 
             if (input)

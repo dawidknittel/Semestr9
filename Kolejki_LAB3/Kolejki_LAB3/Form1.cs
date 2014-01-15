@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Threading;
 using System.Windows.Forms;
 using Kolejki_LAB3.Model;
-using System.Reflection;
 
 namespace Kolejki_LAB3
 {
@@ -169,7 +166,7 @@ namespace Kolejki_LAB3
             groupBoxMachine.Size = new Size(180, 250);
             groupBoxMachine.TabIndex = 1;
             groupBoxMachine.TabStop = false;
-            groupBoxMachine.Text = string.Format("Maszyna{0} - {1}", (QueueSystem.carWashList.Count), string.Format("M/M/{0}/{1}/{2}", QueueSystem.GetLastAddedCarWash().ServicePlacesLength, QueueSystem.GetLastAddedCarWash().Algorithm, QueueSystem.GetLastAddedCarWash().QueueLength));
+            groupBoxMachine.Text = string.Format("Maszyna{0} - {1}", (QueueSystem.carWashList.Count), string.Format("{0}/{1}/{2}", QueueSystem.GetLastAddedCarWash().ServicePlacesLength, QueueSystem.GetLastAddedCarWash().Algorithm, QueueSystem.GetLastAddedCarWash().QueueLength + QueueSystem.GetLastAddedCarWash().ServicePlacesLength));
             
             QueueSystem.carWashList[QueueSystem.carWashList.Count - 1].GroupBox = groupBoxMachine;
 
@@ -335,32 +332,6 @@ namespace Kolejki_LAB3
             Controls.Add(percentLabel);
         }
    
-        public static void var_dump(object obj)
-        {
-            Console.WriteLine("{0,-18} {1}", "Name", "Value");
-            string ln = @"-------------------------------------   
-               ----------------------------";
-            Console.WriteLine(ln);
-
-            Type t = obj.GetType();
-            PropertyInfo[] props = t.GetProperties();
-
-            for (int i = 0; i < props.Length; i++)
-            {
-                try
-                {
-                    Console.WriteLine("{0,-18} {1}",
-                          props[i].Name, props[i].GetValue(obj, null));
-                }
-                catch (Exception e)
-                {
-                    //Console.WriteLine(e);   
-                }
-            }
-            Console.WriteLine();
-            //QueueSystem.comunicates.ForEach(i => Console.Write("{0}\n", i));
-        }
-
         private void oProgramieToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             _formQueueSystemsController.CreateAboutBox();

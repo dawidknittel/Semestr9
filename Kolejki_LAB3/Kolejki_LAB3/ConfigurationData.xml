@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Configurations>
+  <BasicConfiguration>
+    <lambda>120</lambda>
+    <mi>60</mi>
+    <systemQuantity>5</systemQuantity>
+  </BasicConfiguration>
+  <System>
+    <servicePlacesQuantity>1</servicePlacesQuantity>
+    <algorithm>FIFO</algorithm>
+    <queueLength>3</queueLength>
+    <machineName>Maszyna1 - 1/FIFO/4</machineName>
+    <Input>
+      <relatedInputMachine>None</relatedInputMachine>
+      <relatedPercent>40</relatedPercent>
+      <machineSystemState>Start</machineSystemState>
+    </Input>
+    <Output>
+      <relatedOutputMachine>None</relatedOutputMachine>
+      <relatedPercent>40</relatedPercent>
+      <machineSystemState>End</machineSystemState>
+    </Output>
+    <Output>
+      <relatedOutputMachine>Maszyna2 - 3/RSS/6</relatedOutputMachine>
+      <relatedPercent>50</relatedPercent>
+      <machineSystemState>None</machineSystemState>
+    </Output>
+  </System>
+  <System>
+    <servicePlacesQuantity>3</servicePlacesQuantity>
+    <algorithm>RSS</algorithm>
+    <queueLength>3</queueLength>
+    <machineName>Maszyna2 - 3/RSS/6</machineName>
+    <Input>
+      <relatedInputMachine>Maszyna1 - 1/FIFO/4</relatedInputMachine>
+      <relatedPercent>50</relatedPercent>
+      <machineSystemState>None</machineSystemState>
+    </Input>
+    <Input>
+      <relatedInputMachine>Maszyna3 - 2/LIFO/8</relatedInputMachine>
+      <relatedPercent>40</relatedPercent>
+      <machineSystemState>None</machineSystemState>
+    </Input>
+    <Output>
+      <relatedOutputMachine>None</relatedOutputMachine>
+      <relatedPercent>30</relatedPercent>
+      <machineSystemState>End</machineSystemState>
+    </Output>
+    <Output>
+      <relatedOutputMachine>Maszyna5 - 1/FIFO/6</relatedOutputMachine>
+      <relatedPercent>60</relatedPercent>
+      <machineSystemState>None</machineSystemState>
+    </Output>
+  </System>
+  <System>
+    <servicePlacesQuantity>2</servicePlacesQuantity>
+    <algorithm>LIFO</algorithm>
+    <queueLength>6</queueLength>
+    <machineName>Maszyna3 - 2/LIFO/8</machineName>
+    <Input>
+      <relatedInputMachine>None</relatedInputMachine>
+      <relatedPercent>30</relatedPercent>
+      <machineSystemState>Start</machineSystemState>
+    </Input>
+    <Output>
+      <relatedOutputMachine>Maszyna2 - 3/RSS/6</relatedOutputMachine>
+      <relatedPercent>40</relatedPercent>
+      <machineSystemState>None</machineSystemState>
+    </Output>
+    <Output>
+      <relatedOutputMachine>Maszyna4 - 1/LIFO/9</relatedOutputMachine>
+      <relatedPercent>50</relatedPercent>
+      <machineSystemState>None</machineSystemState>
+    </Output>
+  </System>
+  <System>
+    <servicePlacesQuantity>1</servicePlacesQuantity>
+    <algorithm>LIFO</algorithm>
+    <queueLength>8</queueLength>
+    <machineName>Maszyna4 - 1/LIFO/8</machineName>
+    <Input>
+      <relatedInputMachine>Maszyna3 - 2/LIFO/8</relatedInputMachine>
+      <relatedPercent>50</relatedPercent>
+      <machineSystemState>None</machineSystemState>
+    </Input>
+    <Output>
+      <relatedOutputMachine>None</relatedOutputMachine>
+      <relatedPercent>20</relatedPercent>
+      <machineSystemState>End</machineSystemState>
+    </Output>
+  </System>
+  <System>
+    <servicePlacesQuantity>1</servicePlacesQuantity>
+    <algorithm>FIFO</algorithm>
+    <queueLength>5</queueLength>
+    <machineName>Maszyna5 - 1/FIFO/6</machineName>
+    <Input>
+      <relatedInputMachine>Maszyna2 - 3/RSS/6</relatedInputMachine>
+      <relatedPercent>60</relatedPercent>
+      <machineSystemState>None</machineSystemState>
+    </Input>
+    <Output>
+      <relatedOutputMachine>None</relatedOutputMachine>
+      <relatedPercent>10</relatedPercent>
+      <machineSystemState>End</machineSystemState>
+    </Output>
+  </System>
+</Configurations>

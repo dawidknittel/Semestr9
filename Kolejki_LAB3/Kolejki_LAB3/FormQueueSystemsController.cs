@@ -18,6 +18,7 @@ namespace Kolejki_LAB3
         #region Private Fields
 
         private BasicConfiguration basicConfiguration = null;
+        private StatisticsWindow statisticsWindow = null;
         private List<SystemConfiguration> systemConfiguration = null; 
         private FormQueueSystems View = null;
         private bool noFile = false;
@@ -42,14 +43,14 @@ namespace Kolejki_LAB3
 
         public void CreateStatisticsWindow()
         {
-            StatisticsWindow statisticsWindow = new StatisticsWindow();
-            statisticsWindow.ShowDialog();
+            statisticsWindow = new StatisticsWindow();
+            statisticsWindow.Show();
         }
 
         public void CreateAboutBox()
         {
             AboutBox aboutBox = new AboutBox();
-            aboutBox.ShowDialog();
+            aboutBox.Show();
         }
 
         public void LoadBasicConfiguration()
@@ -108,27 +109,7 @@ namespace Kolejki_LAB3
         }
 
         public void RunSimulation()
-        {
-            //QueueSystem.comunicates.Add(new Comunicates("IaN", 0));
-            //QueueSystem.comunicates.Add(new Comunicates("IaN", 1));
-            //QueueSystem.comunicates.Add(new Comunicates("IaN", 5));
-            //QueueSystem.comunicates.Add(new Comunicates("IaN", 2));
-
-
-            //Comunicates.sortComunicates();
-            //Comunicates.getComunicateToHandle();
-            //Comunicates.getComunicateToHandle();
-
-            //if (QueueSystem.comunicates.Count == 0)
-            //{
-            //    QueueSystem.comunicates.Add(new Comunicates("IN", 0));
-            //    listBoxComunicates.Items.Add(QueueSystem.comunicates[0].iComunicateTime + " - " + QueueSystem.comunicates[0].sComunicateContent);
-            //}
-            //else
-            //{
-            //    listBoxComunicates.Items.Add("TEST2");
-            //}
-
+        {      
             while (true)
             {
                 if (pause)
@@ -137,8 +118,6 @@ namespace Kolejki_LAB3
                 }
                 else
                 {
-
-                    //Po co ten warunek? Bo z tego co wyczytałem z kodu to chodzi o to czy w komunikatach jest jakiś który ma typ IN, jeśli tak to generuj. No przyjścia chyba powinny być zawsze generowane co nie?
                     if (!Comunicates.checkComunicateINExists())
                     {
                         generateNewCar();
@@ -146,10 +125,10 @@ namespace Kolejki_LAB3
 
                     // obsługa komunikatu
                     handleComunicate();
+                    UpdateStatistics();
 
                     if (iActualTime > 10000)
                         break;
-
 
                     View.Invoke((MethodInvoker)delegate
                     {
@@ -170,6 +149,29 @@ namespace Kolejki_LAB3
 
                     Thread.Sleep(500);
                 }
+            }
+        }
+
+        public void UpdateStatistics()
+        {
+            if (statisticsWindow != null)
+            {
+                View.Invoke((MethodInvoker)delegate
+                {
+                    string machineName = string.Empty;
+
+                    if (string.IsNullOrEmpty(statisticsWindow.ComboBoxMachinseName.Text))
+                    {
+                        machineName = QueueSystem.carWashList[0].MachineName;
+                        statisticsWindow.ComboBoxMachinseName.Text = machineName;
+                    }
+                    else
+                    {
+                        machineName = statisticsWindow.ComboBoxMachinseName.Text;
+                    }
+
+                    statisticsWindow.StatisticsController.ShowStatistics(machineName);
+                });
             }
         }
 
@@ -239,14 +241,6 @@ namespace Kolejki_LAB3
             // "odczekaj" czas mycia
             actualComunicate.oComunicateCar.setPlannedWaitingTime();
 
-            // find current service place and perform progress bar steps
-
-            //tutaj jest coś na pewno nie tak, bo z tego wynika (co zresztą na wizualizacji zauważyłem), że w danym czasie obsługiwane przez miejsca zgłoszeń może być
-            //tylko jedno zgłoszenie aktualnie myte, a powinno być chyba tak że różne zgłoszenia mogą być równocześnie myte przez kilka maszyn
-            //chodzi o to że jeśli w maszynie 1 myje się jeden samochód, a na przykład w maszynie 2 też jest myte to powiino być tak że myte są oba na raz, a jest tak że jest tylko jedno
-            // trzeba by tutal przelecieć po wszystkich myjniach jakoś, tylko nie wiem jak to teraz wpłynie na resztę systemu, bo nie można chyba zrobić tak że myjemy teraz do końca te zgłoszenia które są w miejscach obsługi
-            // bo zawsze w czasie mycia może coś przyjść. Trzeba by to zrobić to jakoś inteligentnie.
-
             foreach (ServicePlace servicePlace in actualComunicate.oComunicateCarWash.ServicePlaces)
             {
                 if (servicePlace.CurrentCar == actualComunicate.oComunicateCar)
@@ -259,6 +253,12 @@ namespace Kolejki_LAB3
                             servicePlace.ProgressBar.Minimum = 0;
                             servicePlace.ProgressBar.Step = 1;
                             servicePlace.ProgressBar.PerformStep();
+                            
+                        });
+                        View.Invoke((MethodInvoker)delegate
+                        {
+                            decimal percent = Math.Round((Convert.ToDecimal(servicePlace.ProgressBar.Value) / Convert.ToDecimal(servicePlace.ProgressBar.Maximum) * 100), 2);
+                            servicePlace.ProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(servicePlace.ProgressBar.Width / 2 - 10, servicePlace.ProgressBar.Height / 2 - 7));
                         });
                     }
 
@@ -271,6 +271,11 @@ namespace Kolejki_LAB3
 
             // generuje komunikat
             addComunicateToStack(new Comunicates("SERVICE_PLACE_FINISHED", time, actualComunicate.oComunicateCar, actualComunicate.oComunicateCarWash));
+        }
+
+        public void ProgressBarPercent(object sender, PaintEventArgs e)
+        {
+            
         }
 
         public void handleServicePlaceFinishedComunicate(Comunicates actualComunicate)
@@ -314,13 +319,6 @@ namespace Kolejki_LAB3
                 }
                 else
                 {
-                    // usuwa zadanie z maszyny
-                    //_formQueueSystemsController.RemoveApplicationFromServicePlace(actualComunicate.oComunicateCarWash, actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-
-                    // jeśli nie ma miejsc w kolejce - czekaj
-                    //_formQueueSystemsController.RemoveApplicationFromSystem(actualComunicate.oComunicateCar, actualComunicate.iComunicateTime);
-
-                    // ustaw czas czekania samochodu na zwolnienie maszyny
                     actualComunicate.oComunicateCar.setiTimeWaitingInMachine(actualComunicate.iComunicateTime);
                 }
             }
@@ -404,9 +402,6 @@ namespace Kolejki_LAB3
             View.NumericUpDownStreamApplicationIntensity.Value = basicConfiguration.Mi;
         }
 
-        /// <summary>
-        /// Załadowanie danych z pliku
-        /// </summary>
         public void LoadConfiguration()
         {
             LoadBasicConfiguration();
@@ -418,9 +413,6 @@ namespace Kolejki_LAB3
                 LoadSystems();
         }
 
-        /// <summary>
-        /// Zapisanie konfiguracji maszyn
-        /// </summary>
         public void SaveConfiguration()
         {
             FileStream fs = null;
@@ -518,8 +510,10 @@ namespace Kolejki_LAB3
                         servicePlace.ProgressBar.Maximum = car.PlannedWaitingTime;
                         servicePlace.ProgressBar.Minimum = 0;
                         servicePlace.ProgressBar.Step = 1;
-                        servicePlace.ProgressBar.PerformStep();
+                        servicePlace.ProgressBar.PerformStep();                        
                         servicePlace.LabelCurrentCar.Text = car.IdCar.ToString();
+                        decimal percent = 0;
+                        servicePlace.ProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(servicePlace.ProgressBar.Width / 2 - 10, servicePlace.ProgressBar.Height / 2 - 7));
                     });
 
                     // generuje komunikat
@@ -762,6 +756,8 @@ namespace Kolejki_LAB3
             View.Invoke((MethodInvoker)delegate {
                 ProgressBar currentProgressBar = GetProgressBar(carWash, car);
                 currentProgressBar.PerformStep();
+                decimal percent = Math.Round(Convert.ToDecimal((currentProgressBar.Value / currentProgressBar.Maximum) * 100), 2);
+                currentProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(currentProgressBar.Width / 2 - 10, currentProgressBar.Height / 2 - 7));
             }); 
         }
 
@@ -807,8 +803,6 @@ namespace Kolejki_LAB3
 
         public void generateNewCar()
         {
-            //RandomGenerator.simpleRandomValue = new Random();
-            //iActualTime += Convert.ToInt32(RandomGenerator.ExponentialGenerator(120, QueueSystem.Lambda, RandomGenerator.simpleRandomValue));
             iActualTime += Convert.ToInt32(TestSimpleRNG.SimpleRNG.GetExponential(QueueSystem.Lambda));
 
             Car newCar = new Car(iActualTime, 0);
@@ -819,9 +813,6 @@ namespace Kolejki_LAB3
         public void addComunicateToStack(Comunicates com)
         {
             QueueSystem.comunicates.Add(com);
-            //View.ListBoxComunicates.Items.Add(com.sComunicateContent);
-
-            //Console.WriteLine(com.sComunicateContent);
         }
 
         #endregion

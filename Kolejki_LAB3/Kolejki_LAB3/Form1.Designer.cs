@@ -49,6 +49,7 @@
             this.errorProviderServiceTimeIntensity = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProviderStreamApplicationIntensity = new System.Windows.Forms.ErrorProvider(this.components);
             this.groupBoxComunicates = new System.Windows.Forms.GroupBox();
+            this.labelComunicateCurrent = new System.Windows.Forms.Label();
             this.labeltimeCurrent = new System.Windows.Forms.Label();
             this.buttonClear = new System.Windows.Forms.Button();
             this.listBoxComunicates = new System.Windows.Forms.ListBox();
@@ -56,11 +57,10 @@
             this.labelInputStream = new System.Windows.Forms.Label();
             this.labelOutputStream = new System.Windows.Forms.Label();
             this.groupBoxArchiveComunicates = new System.Windows.Forms.GroupBox();
+            this.labelComunicateArchive = new System.Windows.Forms.Label();
+            this.labelTimeArchive = new System.Windows.Forms.Label();
             this.buttonClearArchiveComunicates = new System.Windows.Forms.Button();
             this.listBoxArchiveComunicates = new System.Windows.Forms.ListBox();
-            this.labelTimeArchive = new System.Windows.Forms.Label();
-            this.labelComunicateCurrent = new System.Windows.Forms.Label();
-            this.labelComunicateArchive = new System.Windows.Forms.Label();
             this.groupBoxBasicData.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStreamApplicationIntensity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownServiceIntensity)).BeginInit();
@@ -249,6 +249,15 @@
             this.groupBoxComunicates.TabStop = false;
             this.groupBoxComunicates.Text = "Komunikaty aktualne";
             // 
+            // labelComunicateCurrent
+            // 
+            this.labelComunicateCurrent.AutoSize = true;
+            this.labelComunicateCurrent.Location = new System.Drawing.Point(58, 25);
+            this.labelComunicateCurrent.Name = "labelComunicateCurrent";
+            this.labelComunicateCurrent.Size = new System.Drawing.Size(98, 13);
+            this.labelComunicateCurrent.TabIndex = 3;
+            this.labelComunicateCurrent.Text = "Nazwa komunikatu";
+            // 
             // labeltimeCurrent
             // 
             this.labeltimeCurrent.AutoSize = true;
@@ -311,6 +320,24 @@
             this.groupBoxArchiveComunicates.TabStop = false;
             this.groupBoxArchiveComunicates.Text = "Komunikaty archiwalne";
             // 
+            // labelComunicateArchive
+            // 
+            this.labelComunicateArchive.AutoSize = true;
+            this.labelComunicateArchive.Location = new System.Drawing.Point(58, 29);
+            this.labelComunicateArchive.Name = "labelComunicateArchive";
+            this.labelComunicateArchive.Size = new System.Drawing.Size(98, 13);
+            this.labelComunicateArchive.TabIndex = 4;
+            this.labelComunicateArchive.Text = "Nazwa komunikatu";
+            // 
+            // labelTimeArchive
+            // 
+            this.labelTimeArchive.AutoSize = true;
+            this.labelTimeArchive.Location = new System.Drawing.Point(15, 29);
+            this.labelTimeArchive.Name = "labelTimeArchive";
+            this.labelTimeArchive.Size = new System.Drawing.Size(30, 13);
+            this.labelTimeArchive.TabIndex = 3;
+            this.labelTimeArchive.Text = "Czas";
+            // 
             // buttonClearArchiveComunicates
             // 
             this.buttonClearArchiveComunicates.Location = new System.Drawing.Point(256, 255);
@@ -328,33 +355,6 @@
             this.listBoxArchiveComunicates.Name = "listBoxArchiveComunicates";
             this.listBoxArchiveComunicates.Size = new System.Drawing.Size(316, 199);
             this.listBoxArchiveComunicates.TabIndex = 0;
-            // 
-            // labelTimeArchive
-            // 
-            this.labelTimeArchive.AutoSize = true;
-            this.labelTimeArchive.Location = new System.Drawing.Point(15, 29);
-            this.labelTimeArchive.Name = "labelTimeArchive";
-            this.labelTimeArchive.Size = new System.Drawing.Size(30, 13);
-            this.labelTimeArchive.TabIndex = 3;
-            this.labelTimeArchive.Text = "Czas";
-            // 
-            // labelComunicateCurrent
-            // 
-            this.labelComunicateCurrent.AutoSize = true;
-            this.labelComunicateCurrent.Location = new System.Drawing.Point(58, 25);
-            this.labelComunicateCurrent.Name = "labelComunicateCurrent";
-            this.labelComunicateCurrent.Size = new System.Drawing.Size(98, 13);
-            this.labelComunicateCurrent.TabIndex = 3;
-            this.labelComunicateCurrent.Text = "Nazwa komunikatu";
-            // 
-            // labelComunicateArchive
-            // 
-            this.labelComunicateArchive.AutoSize = true;
-            this.labelComunicateArchive.Location = new System.Drawing.Point(58, 29);
-            this.labelComunicateArchive.Name = "labelComunicateArchive";
-            this.labelComunicateArchive.Size = new System.Drawing.Size(98, 13);
-            this.labelComunicateArchive.TabIndex = 4;
-            this.labelComunicateArchive.Text = "Nazwa komunikatu";
             // 
             // FormQueueSystems
             // 

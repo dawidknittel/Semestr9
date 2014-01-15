@@ -93,6 +93,7 @@ namespace Kolejki_LAB3.AddMachine
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             labeLNumerOfitems.Text = numericUpDownServicePlacesNumber.Value.ToString();
+            labelQueueLenghtPattern.Text = (numericUpDownQueueLenght.Value + numericUpDownServicePlacesNumber.Value).ToString();
             _addMachineController.CurrentCarWash.ServicePlacesLength = int.Parse(numericUpDownServicePlacesNumber.Value.ToString());
         }
 
@@ -104,7 +105,7 @@ namespace Kolejki_LAB3.AddMachine
 
         private void numericUpDownQueueLenght_ValueChanged(object sender, EventArgs e)
         {
-            labelQueueLenghtPattern.Text = numericUpDownQueueLenght.Value.ToString();
+            labelQueueLenghtPattern.Text = (numericUpDownQueueLenght.Value + numericUpDownServicePlacesNumber.Value).ToString();
             _addMachineController.CurrentCarWash.QueueLength = int.Parse(numericUpDownQueueLenght.Value.ToString());
         }
 

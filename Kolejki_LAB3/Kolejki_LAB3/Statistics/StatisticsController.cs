@@ -28,9 +28,9 @@ namespace Kolejki_LAB3.Statistics
             }
         }
 
-        public void ShowStatistics()
+        public void ShowStatistics(string machineName)
         {
-            CarWash currentCarWash = CarWash.FindCarWash(View.ComboBoxMachinseName.Text);
+            CarWash currentCarWash = CarWash.FindCarWash(machineName);
 
             if (currentCarWash != null)
             {
