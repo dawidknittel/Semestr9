@@ -35,7 +35,7 @@ namespace Kolejki_LAB3
         public void setPlannedWaitingTime()
         {
             //RandomGenerator.simpleRandomValue = new Random();
-            PlannedWaitingTime = Convert.ToInt32(TestSimpleRNG.SimpleRNG.GetExponential(QueueSystem.Lambda));
+            PlannedWaitingTime = Convert.ToInt32(TestSimpleRNG.SimpleRNG.GetExponential(QueueSystem.Mi));
             //PlannedWaitingTime = Convert.ToInt32(RandomGenerator.ExponentialGenerator(120, QueueSystem.Lambda, RandomGenerator.simpleRandomValue));
         }
 

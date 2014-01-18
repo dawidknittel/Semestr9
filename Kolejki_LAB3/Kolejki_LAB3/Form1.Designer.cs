@@ -42,6 +42,9 @@
             this.zamknijToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dodajToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.symulacjaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetujSymulacjęToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.skasujModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statystykiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statystykiToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.oProgramieToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,16 +83,16 @@
             this.groupBoxBasicData.Controls.Add(this.numericUpDownServiceIntensity);
             this.groupBoxBasicData.Location = new System.Drawing.Point(1038, 32);
             this.groupBoxBasicData.Name = "groupBoxBasicData";
-            this.groupBoxBasicData.Size = new System.Drawing.Size(337, 174);
+            this.groupBoxBasicData.Size = new System.Drawing.Size(287, 174);
             this.groupBoxBasicData.TabIndex = 1;
             this.groupBoxBasicData.TabStop = false;
             this.groupBoxBasicData.Text = "Podstawowe dane";
             // 
             // buttonStart
             // 
-            this.buttonStart.Location = new System.Drawing.Point(41, 104);
+            this.buttonStart.Location = new System.Drawing.Point(24, 101);
             this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(185, 64);
+            this.buttonStart.Size = new System.Drawing.Size(234, 67);
             this.buttonStart.TabIndex = 4;
             this.buttonStart.Text = "START";
             this.buttonStart.UseVisualStyleBackColor = true;
@@ -144,11 +147,12 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.plikToolStripMenuItem,
             this.modelToolStripMenuItem,
+            this.symulacjaToolStripMenuItem,
             this.statystykiToolStripMenuItem,
             this.oProgramieToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1387, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1334, 24);
             this.menuStrip1.TabIndex = 4;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -198,6 +202,29 @@
             this.dodajToolStripMenuItem.Text = "Dodaj maszynę";
             this.dodajToolStripMenuItem.Click += new System.EventHandler(this.dodajToolStripMenuItem_Click);
             // 
+            // symulacjaToolStripMenuItem
+            // 
+            this.symulacjaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.resetujSymulacjęToolStripMenuItem,
+            this.skasujModelToolStripMenuItem});
+            this.symulacjaToolStripMenuItem.Name = "symulacjaToolStripMenuItem";
+            this.symulacjaToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.symulacjaToolStripMenuItem.Text = "Symulacja";
+            // 
+            // resetujSymulacjęToolStripMenuItem
+            // 
+            this.resetujSymulacjęToolStripMenuItem.Name = "resetujSymulacjęToolStripMenuItem";
+            this.resetujSymulacjęToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.resetujSymulacjęToolStripMenuItem.Text = "Resetuj symulację";
+            this.resetujSymulacjęToolStripMenuItem.Click += new System.EventHandler(this.resetujSymulacjęToolStripMenuItem_Click);
+            // 
+            // skasujModelToolStripMenuItem
+            // 
+            this.skasujModelToolStripMenuItem.Name = "skasujModelToolStripMenuItem";
+            this.skasujModelToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.skasujModelToolStripMenuItem.Text = "Skasuj model";
+            this.skasujModelToolStripMenuItem.Click += new System.EventHandler(this.skasujModelToolStripMenuItem_Click);
+            // 
             // statystykiToolStripMenuItem
             // 
             this.statystykiToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -244,7 +271,7 @@
             this.groupBoxComunicates.Controls.Add(this.listBoxComunicates);
             this.groupBoxComunicates.Location = new System.Drawing.Point(1038, 212);
             this.groupBoxComunicates.Name = "groupBoxComunicates";
-            this.groupBoxComunicates.Size = new System.Drawing.Size(337, 150);
+            this.groupBoxComunicates.Size = new System.Drawing.Size(287, 150);
             this.groupBoxComunicates.TabIndex = 5;
             this.groupBoxComunicates.TabStop = false;
             this.groupBoxComunicates.Text = "Komunikaty aktualne";
@@ -269,7 +296,7 @@
             // 
             // buttonClear
             // 
-            this.buttonClear.Location = new System.Drawing.Point(256, 116);
+            this.buttonClear.Location = new System.Drawing.Point(197, 116);
             this.buttonClear.Name = "buttonClear";
             this.buttonClear.Size = new System.Drawing.Size(75, 23);
             this.buttonClear.TabIndex = 1;
@@ -282,7 +309,7 @@
             this.listBoxComunicates.FormattingEnabled = true;
             this.listBoxComunicates.Location = new System.Drawing.Point(15, 41);
             this.listBoxComunicates.Name = "listBoxComunicates";
-            this.listBoxComunicates.Size = new System.Drawing.Size(316, 69);
+            this.listBoxComunicates.Size = new System.Drawing.Size(257, 69);
             this.listBoxComunicates.TabIndex = 0;
             // 
             // backgroundWorkerUpdateInterface
@@ -315,7 +342,7 @@
             this.groupBoxArchiveComunicates.Controls.Add(this.listBoxArchiveComunicates);
             this.groupBoxArchiveComunicates.Location = new System.Drawing.Point(1038, 368);
             this.groupBoxArchiveComunicates.Name = "groupBoxArchiveComunicates";
-            this.groupBoxArchiveComunicates.Size = new System.Drawing.Size(337, 284);
+            this.groupBoxArchiveComunicates.Size = new System.Drawing.Size(287, 284);
             this.groupBoxArchiveComunicates.TabIndex = 8;
             this.groupBoxArchiveComunicates.TabStop = false;
             this.groupBoxArchiveComunicates.Text = "Komunikaty archiwalne";
@@ -340,7 +367,7 @@
             // 
             // buttonClearArchiveComunicates
             // 
-            this.buttonClearArchiveComunicates.Location = new System.Drawing.Point(256, 255);
+            this.buttonClearArchiveComunicates.Location = new System.Drawing.Point(197, 250);
             this.buttonClearArchiveComunicates.Name = "buttonClearArchiveComunicates";
             this.buttonClearArchiveComunicates.Size = new System.Drawing.Size(75, 23);
             this.buttonClearArchiveComunicates.TabIndex = 2;
@@ -353,14 +380,14 @@
             this.listBoxArchiveComunicates.FormattingEnabled = true;
             this.listBoxArchiveComunicates.Location = new System.Drawing.Point(15, 45);
             this.listBoxArchiveComunicates.Name = "listBoxArchiveComunicates";
-            this.listBoxArchiveComunicates.Size = new System.Drawing.Size(316, 199);
+            this.listBoxArchiveComunicates.Size = new System.Drawing.Size(257, 199);
             this.listBoxArchiveComunicates.TabIndex = 0;
             // 
             // FormQueueSystems
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1387, 661);
+            this.ClientSize = new System.Drawing.Size(1334, 661);
             this.Controls.Add(this.groupBoxArchiveComunicates);
             this.Controls.Add(this.labelOutputStream);
             this.Controls.Add(this.labelInputStream);
@@ -424,6 +451,9 @@
         private System.Windows.Forms.Label labelComunicateArchive;
         private System.Windows.Forms.Label labelTimeArchive;
         private System.Windows.Forms.Label labelComunicateCurrent;
+        private System.Windows.Forms.ToolStripMenuItem symulacjaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetujSymulacjęToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem skasujModelToolStripMenuItem;
 
     }
 }

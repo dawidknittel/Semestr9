@@ -35,6 +35,8 @@ namespace Kolejki_LAB3.Model
         public List<InputOutput> InputSystems = new List<InputOutput>();
         public List<InputOutput> OutputSystems = new List<InputOutput>();
 
+        public List<MeanTimeInQueue> ChartData = new List<MeanTimeInQueue>(); 
+
         #endregion
         #region Public Methods
 
@@ -83,7 +85,7 @@ namespace Kolejki_LAB3.Model
 
         public static decimal calculateMeanNumberOfApplicationInQueue(CarWash carwash)
         {
-            if (carwash.timeTotal == 0)
+            if (carwash.timeTotal == 0 || carwash.numberOfCarsTotal == 0)
                 return 0;
 
             // Średnia liczba samochodów obsłużonych w jednostce czasu. (Liczba aut obsłużonych / time total)
@@ -93,33 +95,29 @@ namespace Kolejki_LAB3.Model
 
         public static decimal calculateMeanTimeApplicationInQueue(CarWash carwash)
         {
-            if (carwash.numberOfCarsInQueueTotal == 0)
+            if (carwash.numberOfCarsInQueueTotal == 0 || carwash.numberOfCarsTotal == 0)
                 return 0;
 
-            Console.WriteLine(carwash.timeInQueueTotal);
-            Console.WriteLine(carwash.numberOfCarsInQueueTotal);
             // Średni czas przebywania w kolejce
-            return (Convert.ToDecimal(carwash.timeInQueueTotal) / Convert.ToDecimal(carwash.numberOfCarsInQueueTotal));
-
+            return (Convert.ToDecimal(carwash.timeInQueueTotal) / Convert.ToDecimal(carwash.numberOfCarsTotal));
         }
 
         public static decimal calculateRelativeSystemAbility(CarWash carwash)
         {
-            if (carwash.numberOfCarsTotal == 0)
+            if (carwash.numberOfCarsTotal == 0 || carwash.numberOfCarsTotal == 0)
                 return 0;
 
             // Liczba aut obsłużonych / liczba wszystkich aut
             return (Convert.ToDecimal(carwash.numberOfSucceeded) / Convert.ToDecimal(carwash.numberOfCarsTotal));
-
         }
 
         public static decimal calculateAbsoluteSystemAbility(CarWash carwash)
         {
-            if (carwash.timeTotal == 0)
+            if (carwash.timeTotal == 0 || carwash.numberOfCarsTotal == 0)
                 return 0;
 
             // Średnia liczba samochodów obsłużonych w jednostce czasu. (Liczba aut obsłużonych / time total)
-            return (Convert.ToDecimal(carwash.numberOfSucceeded) / Convert.ToDecimal(carwash.timeTotal));
+            return 1 - (Convert.ToDecimal(carwash.numberOfSucceeded) / Convert.ToDecimal(carwash.numberOfCarsTotal));
 
         }
         /*

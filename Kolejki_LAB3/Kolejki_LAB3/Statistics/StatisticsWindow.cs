@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using Kolejki_LAB3.Statistics;
 
 namespace Kolejki_LAB3
@@ -9,9 +10,15 @@ namespace Kolejki_LAB3
         #region Private Fields
 
         private StatisticsController _StatisticsController = null;
+        private FormQueueSystems _MainWindowView = null;
 
         #endregion
         #region Properties
+
+        public Chart ChartMeanTimeInQueue
+        {
+            get { return chartMeanTimeInQueue; }
+        }
 
         public StatisticsController StatisticsController
         {
@@ -21,6 +28,11 @@ namespace Kolejki_LAB3
         public ComboBox ComboBoxMachinseName
         {
             get { return comboBoxMachinesName; }
+        }
+
+        public TextBox TextBoxApplicationNumber
+        {
+            get { return textBoxApplicationNumber; }
         }
 
         public TextBox TextBoxRelativeSystemAbility
@@ -46,12 +58,13 @@ namespace Kolejki_LAB3
         #endregion
         #region Constructors
 
-        public StatisticsWindow()
+        public StatisticsWindow(FormQueueSystems mainWindowView)
         {
             InitializeComponent();
 
             _StatisticsController = new StatisticsController(this);
             _StatisticsController.LoadSystems();
+            _MainWindowView = mainWindowView;
         }
 
         #endregion
@@ -67,6 +80,11 @@ namespace Kolejki_LAB3
             _StatisticsController.ShowStatistics(comboBoxMachinesName.Text);
         }
 
-        #endregion
+        private void StatisticsWindow_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _MainWindowView._formQueueSystemsController.statisticsWindow = null;
+        }
+
+        #endregion 
     }
 }

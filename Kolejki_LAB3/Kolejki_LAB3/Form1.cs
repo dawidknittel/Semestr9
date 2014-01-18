@@ -9,12 +9,22 @@ namespace Kolejki_LAB3
 {
     public partial class FormQueueSystems : Form
     {
-        #region Private Fields
+        #region Public Fields
 
-        private FormQueueSystemsController _formQueueSystemsController = null;
+        public FormQueueSystemsController _formQueueSystemsController = null;
 
         #endregion
         #region Properties
+
+        public ToolStripMenuItem SkasujModelToolStripMenuItem
+        {
+            get { return skasujModelToolStripMenuItem; }
+        }
+
+        public ToolStripMenuItem ResetujSymulacjęToolStripMenuItem
+        {
+            get { return resetujSymulacjęToolStripMenuItem; }
+        }
 
         public BackgroundWorker BackgroundWorkerUpdateInterface
         {
@@ -64,7 +74,7 @@ namespace Kolejki_LAB3
             InitializeComponent();
 
             _formQueueSystemsController = new FormQueueSystemsController(this);
-            backgroundWorkerUpdateInterface.DoWork += backgroundWorkerUpdateInterface_DoWork;          
+            resetujSymulacjęToolStripMenuItem.Enabled = false;        
 
             QueueSystem.FillListPoints();
             QueueSystem.FillStartPoints();
@@ -134,6 +144,7 @@ namespace Kolejki_LAB3
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
+            backgroundWorkerUpdateInterface.DoWork += backgroundWorkerUpdateInterface_DoWork;
             _formQueueSystemsController.StartPauseSimulation();
         }
 
@@ -172,7 +183,7 @@ namespace Kolejki_LAB3
 
             for (int i = 0; i < QueueSystem.GetLastAddedCarWash().ServicePlacesLength; i++)
             {
-                ProgressBar progressBar = new ProgressBar();
+                PercentProgressBar progressBar = new PercentProgressBar();
                 progressBar.Location = new Point(10, 20 + 30*i);
                 progressBar.Size = new Size(100, 23);
                 progressBar.Name = "progressBar" + (i+1);
@@ -231,13 +242,13 @@ namespace Kolejki_LAB3
             {
                 if (inputOutput.CarWash == null && inputOutput.State.Equals(SystemState.Start.ToString()))
                 {
-                    DrawStartupRelations(carWash, inputOutput.Percent);
+                    DrawStartupRelations(carWash, inputOutput.Percent, ref inputOutput.PercentLabel);
                     continue;
                 }    
 
                 if (inputOutput.CarWash != null)
                 {
-                    DrawFromMachineToMachine(inputOutput.CarWash, carWash, inputOutput.Percent);
+                    DrawFromMachineToMachine(inputOutput.CarWash, carWash, inputOutput.Percent, ref inputOutput.PercentLabel);
                 }
             }
 
@@ -245,30 +256,30 @@ namespace Kolejki_LAB3
             {
                 if (inputOutput.CarWash == null && inputOutput.State.Equals(SystemState.End.ToString()))
                 {
-                    DrawEndRelations(carWash, inputOutput.Percent);
+                    DrawEndRelations(carWash, inputOutput.Percent, ref inputOutput.PercentLabel);
                     continue;
                 }
 
                 if (inputOutput.CarWash != null)
                 {
-                    DrawFromMachineToMachine(carWash, inputOutput.CarWash, inputOutput.Percent);
+                    DrawFromMachineToMachine(carWash, inputOutput.CarWash, inputOutput.Percent, ref inputOutput.PercentLabel);
                 }
             }
         }
 
-        public void DrawStartupRelations(CarWash carWash, decimal percent)
+        public void DrawStartupRelations(CarWash carWash, decimal percent, ref Label percentLabel)
         {
             int y = QueueSystem.startPoints[int.Parse(carWash.MachineName.Substring(7, 1)) - 1];
-            DrawArrow(Constants.StartX, carWash.GroupBox.Location.Y + y, carWash.GroupBox.Location.X, carWash.GroupBox.Location.Y + y, percent);
+            DrawArrow(Constants.StartX, carWash.GroupBox.Location.Y + y, carWash.GroupBox.Location.X, carWash.GroupBox.Location.Y + y, percent, ref percentLabel);
         }
 
-        public void DrawEndRelations(CarWash carWash, decimal percent)
+        public void DrawEndRelations(CarWash carWash, decimal percent, ref Label percentLabel)
         {
             int y = QueueSystem.endPoints[int.Parse(carWash.MachineName.Substring(7, 1)) - 1];
-            DrawArrow(carWash.GroupBox.Location.X + 175, carWash.GroupBox.Location.Y + y, Constants.EndX, carWash.GroupBox.Location.Y + y, percent);
+            DrawArrow(carWash.GroupBox.Location.X + 175, carWash.GroupBox.Location.Y + y, Constants.EndX, carWash.GroupBox.Location.Y + y, percent, ref percentLabel);
         }
 
-        public void DrawFromMachineToMachine(CarWash carWashFrom, CarWash carWashTo, decimal percent)
+        public void DrawFromMachineToMachine(CarWash carWashFrom, CarWash carWashTo, decimal percent, ref Label percentLabel)
         {
             int endX = 0, endY = 0;
 
@@ -299,10 +310,10 @@ namespace Kolejki_LAB3
                 endY = carWashTo.GroupBox.Location.Y + 125; 
             }
 
-            DrawArrow(carWashFrom.GroupBox.Location.X + 180 - 10, carWashFrom.GroupBox.Location.Y + 120, endX, endY, percent);
+            DrawArrow(carWashFrom.GroupBox.Location.X + 180 - 10, carWashFrom.GroupBox.Location.Y + 120, endX, endY, percent, ref percentLabel);
         }
 
-        public void DrawArrow(int startX, int startY, int endX, int endY, decimal percent)
+        public void DrawArrow(int startX, int startY, int endX, int endY, decimal percent, ref Label percentLabel)
         {
             Graphics g = CreateGraphics();
             g.SmoothingMode = SmoothingMode.AntiAlias;
@@ -313,21 +324,21 @@ namespace Kolejki_LAB3
             p.Dispose();
 
             if (startY - endY > 100)
-                CreatePercentLabel(endX + 8, endY + 10, percent);
+                CreatePercentLabel(endX + 8, endY + 10, percent, ref percentLabel);
             else if ((endY - startY) < 50 && (endY - startY) > 20)
-                CreatePercentLabel(endX + 20, endY - 40, percent);
+                CreatePercentLabel(endX + 20, endY - 40, percent, ref percentLabel);
             else if (endY - startY > 100)
-                CreatePercentLabel(endX + 20, endY - 18, percent);
+                CreatePercentLabel(endX + 20, endY - 18, percent, ref percentLabel);
             else
-                CreatePercentLabel(endX - 35, endY - 18, percent);
+                CreatePercentLabel(endX - 35, endY - 18, percent, ref percentLabel);
         }
 
-        public void CreatePercentLabel(int x, int y, decimal percent)
+        public void CreatePercentLabel(int x, int y, decimal percent, ref Label percentLabel)
         {
-            Label percentLabel = new Label();
+            percentLabel = new Label();
             percentLabel.Location = new Point(x, y);
             percentLabel.Text = string.Format("{0}%", percent);
-            percentLabel.Name = percentLabel + x.ToString() + y.ToString() + percent;
+            percentLabel.Name = "PERCENTLABEL";
             percentLabel.Size = new Size(40, 13);
             Controls.Add(percentLabel);
         }
@@ -345,6 +356,99 @@ namespace Kolejki_LAB3
             });
         }
 
-        #endregion
+        private void resetujSymulacjęToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            resetujSymulacjęToolStripMenuItem.Enabled = false;
+            _formQueueSystemsController.simulationStarted = false;
+            ResetSimulation();
+        }
+
+        private void skasujModelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteModel();
+        }
+
+        public void ResetSimulation()
+        {
+            _formQueueSystemsController.reset = true;
+
+            if (backgroundWorkerUpdateInterface.IsBusy)
+            {
+                backgroundWorkerUpdateInterface.DoWork -= backgroundWorkerUpdateInterface_DoWork;
+                backgroundWorkerUpdateInterface.WorkerSupportsCancellation = true;
+                backgroundWorkerUpdateInterface.CancelAsync();
+            }
+
+            foreach (CarWash carWash in QueueSystem.carWashList)
+            {
+                carWash.AbsoluteSystemAbility = 0;
+                carWash.ChartData.Clear();
+                carWash.MeanNumberOfApplicationInQueue = 0;
+                carWash.MeanTimeApplicationInQueue = 0;
+                carWash.RelativeSystemAbility = 0;
+                carWash.numberOfCarsInQueueTotal = 0;
+                carWash.numberOfCarsTotal = 0;
+                carWash.timeTotal = 0;
+                carWash.numberOfSucceeded = 0;
+                _formQueueSystemsController.iActualTime = 0;
+
+                foreach (ServicePlace servicePlace in carWash.ServicePlaces)
+                {
+                    servicePlace.CurrentCar = null;
+                    servicePlace.LabelCurrentCar.Text = string.Empty;
+                    servicePlace.ProgressBar.Value = 0;
+                    servicePlace.ProgressBar.Maximum = 0;
+                }
+
+                Invoke((MethodInvoker)delegate
+                {
+                    carWash.ListBox.Items.Clear();
+                    foreach (ServicePlace servicePlace in carWash.ServicePlaces)
+                    {
+                        servicePlace.ProgressBar.Value = 0;
+                    }
+                });
+            }
+
+            QueueSystem.comunicates.Clear();
+            QueueSystem.comunicatesUsed.Clear();
+            Car.IdCounter = 1;
+            Invoke((MethodInvoker)delegate
+            {
+                listBoxArchiveComunicates.DataSource = null;
+                listBoxComunicates.DataSource = null;
+                buttonStart.Text = "START";
+            });
+        }
+
+        public void DeleteModel()
+        {
+            foreach (CarWash carWash in QueueSystem.carWashList)
+            {
+                foreach (InputOutput input in carWash.InputSystems)
+                {
+                    if (input.PercentLabel != null)
+                        input.PercentLabel.Dispose();
+                }
+                foreach (InputOutput output in carWash.OutputSystems)
+                {
+                    if (output.PercentLabel != null)
+                        output.PercentLabel.Dispose();
+                }
+
+                carWash.GroupBox.Dispose();
+            }
+
+            this.Paint -= FormQueueSystems_Paint;
+            this.Invalidate();
+
+            QueueSystem.carWashList.Clear();
+            QueueSystem.FillListPoints();
+            QueueSystem.FillStartPoints();
+            QueueSystem.FillEndPoints();
+            this.Paint += FormQueueSystems_Paint;
+        }
+
+        #endregion         
     }
 }

@@ -13,19 +13,21 @@ using Kolejki_LAB3.Model;
 
 namespace Kolejki_LAB3
 {
-    class FormQueueSystemsController
+    public class FormQueueSystemsController
     {
         #region Private Fields
 
         private BasicConfiguration basicConfiguration = null;
-        private StatisticsWindow statisticsWindow = null;
+        private ProgressBar currentProgressBar = null;
+        public StatisticsWindow statisticsWindow = null;
         private List<SystemConfiguration> systemConfiguration = null; 
         private FormQueueSystems View = null;
         private bool noFile = false;
         private Random gen = null;
         public int iActualTime = 0;
+        public bool reset = false;
         private bool pause = false;
-        private bool simulationStarted = false;
+        public bool simulationStarted = false;
 
         private const string FILE_NAME = "ConfigurationData.xml";
 
@@ -43,7 +45,7 @@ namespace Kolejki_LAB3
 
         public void CreateStatisticsWindow()
         {
-            statisticsWindow = new StatisticsWindow();
+            statisticsWindow = new StatisticsWindow(View);
             statisticsWindow.Show();
         }
 
@@ -93,12 +95,15 @@ namespace Kolejki_LAB3
                 {
                     if (!simulationStarted)
                     {
-                        View.BackgroundWorkerUpdateInterface.RunWorkerAsync();
+                        reset = false;
+                        View.BackgroundWorkerUpdateInterface.RunWorkerAsync();                  
                     }
 
                     View.Invoke((MethodInvoker)delegate { pause = false; });
                     simulationStarted = true;
                     View.ButtonStart.Text = "ZATRZYMAJ";
+                    View.SkasujModelToolStripMenuItem.Enabled = false;
+                    View.ResetujSymulacjęToolStripMenuItem.Enabled = true;
                 }
             }
             else if (View.BackgroundWorkerUpdateInterface.IsBusy)
@@ -109,9 +114,15 @@ namespace Kolejki_LAB3
         }
 
         public void RunSimulation()
-        {      
+        {
             while (true)
             {
+                if (reset)
+                {
+                    View.ResetSimulation();
+                    break;
+                }
+
                 if (pause)
                 {
                     Thread.Sleep(100);
@@ -125,10 +136,8 @@ namespace Kolejki_LAB3
 
                     // obsługa komunikatu
                     handleComunicate();
-                    UpdateStatistics();
-
-                    if (iActualTime > 10000)
-                        break;
+                    UpdateChartData(iActualTime);               
+                    UpdateStatistics();                  
 
                     View.Invoke((MethodInvoker)delegate
                     {
@@ -171,7 +180,27 @@ namespace Kolejki_LAB3
                     }
 
                     statisticsWindow.StatisticsController.ShowStatistics(machineName);
+                    statisticsWindow.StatisticsController.FillChartWithData();
                 });
+            }         
+        }
+
+        public void UpdateChartData(int time)
+        {
+            foreach (CarWash carWash in QueueSystem.carWashList)
+            {
+                if (carWash.ChartData.Count >= 1000)
+                {
+                    carWash.ChartData.RemoveAt(0);  
+                }
+
+                carWash.ChartData.Add(new MeanTimeInQueue()
+                {
+                    CurrentTime = time,
+                    MeanTime = CarWash.calculateMeanTimeApplicationInQueue(carWash)              
+                });
+
+                carWash.ChartData = carWash.ChartData.OrderBy(o => o.CurrentTime).ToList();
             }
         }
 
@@ -249,17 +278,16 @@ namespace Kolejki_LAB3
                     {
                         View.Invoke((MethodInvoker)delegate
                         {
+                            currentProgressBar = servicePlace.ProgressBar;
                             servicePlace.ProgressBar.Maximum = actualComunicate.oComunicateCar.PlannedWaitingTime;
                             servicePlace.ProgressBar.Minimum = 0;
                             servicePlace.ProgressBar.Step = 1;
-                            servicePlace.ProgressBar.PerformStep();
+                            servicePlace.ProgressBar.PerformStep();                          
+                            decimal percent = Math.Round((Convert.ToDecimal(currentProgressBar.Value) / Convert.ToDecimal(currentProgressBar.Maximum) * 100), 2);
+                            servicePlace.ProgressBar.Paint += new PaintEventHandler((object sender, PaintEventArgs e) =>
+                                e.Graphics.DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(servicePlace.ProgressBar.Width / 2 - 10, servicePlace.ProgressBar.Height / 2 - 7)));
                             
-                        });
-                        View.Invoke((MethodInvoker)delegate
-                        {
-                            decimal percent = Math.Round((Convert.ToDecimal(servicePlace.ProgressBar.Value) / Convert.ToDecimal(servicePlace.ProgressBar.Maximum) * 100), 2);
-                            servicePlace.ProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(servicePlace.ProgressBar.Width / 2 - 10, servicePlace.ProgressBar.Height / 2 - 7));
-                        });
+                        });                       
                     }
 
                     break;
@@ -275,7 +303,11 @@ namespace Kolejki_LAB3
 
         public void ProgressBarPercent(object sender, PaintEventArgs e)
         {
-            
+            View.Invoke((MethodInvoker)delegate
+            {
+                decimal percent = Math.Round((Convert.ToDecimal(currentProgressBar.Value) / Convert.ToDecimal(currentProgressBar.Maximum) * 100), 2);
+                currentProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(currentProgressBar.Width / 2 - 10, currentProgressBar.Height / 2 - 7));
+            });
         }
 
         public void handleServicePlaceFinishedComunicate(Comunicates actualComunicate)
@@ -512,8 +544,8 @@ namespace Kolejki_LAB3
                         servicePlace.ProgressBar.Step = 1;
                         servicePlace.ProgressBar.PerformStep();                        
                         servicePlace.LabelCurrentCar.Text = car.IdCar.ToString();
-                        decimal percent = 0;
-                        servicePlace.ProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(servicePlace.ProgressBar.Width / 2 - 10, servicePlace.ProgressBar.Height / 2 - 7));
+                        //decimal percent = 0;
+                        //servicePlace.ProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(servicePlace.ProgressBar.Width / 2 - 10, servicePlace.ProgressBar.Height / 2 - 7));
                     });
 
                     // generuje komunikat
@@ -756,8 +788,8 @@ namespace Kolejki_LAB3
             View.Invoke((MethodInvoker)delegate {
                 ProgressBar currentProgressBar = GetProgressBar(carWash, car);
                 currentProgressBar.PerformStep();
-                decimal percent = Math.Round(Convert.ToDecimal((currentProgressBar.Value / currentProgressBar.Maximum) * 100), 2);
-                currentProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(currentProgressBar.Width / 2 - 10, currentProgressBar.Height / 2 - 7));
+                //decimal percent = Math.Round(Convert.ToDecimal((currentProgressBar.Value / currentProgressBar.Maximum) * 100), 2);
+                //currentProgressBar.CreateGraphics().DrawString(percent + "%", new Font("Arial", (float)8.25, FontStyle.Regular), Brushes.Black, new PointF(currentProgressBar.Width / 2 - 10, currentProgressBar.Height / 2 - 7));
             }); 
         }
 
@@ -812,6 +844,11 @@ namespace Kolejki_LAB3
 
         public void addComunicateToStack(Comunicates com)
         {
+            if (QueueSystem.comunicates.Count > 100)
+            {
+                QueueSystem.comunicates.RemoveAt(0);
+            }
+
             QueueSystem.comunicates.Add(com);
         }
 
