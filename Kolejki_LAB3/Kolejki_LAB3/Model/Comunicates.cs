@@ -51,22 +51,11 @@ namespace Kolejki_LAB3.Model
         {
             sortComunicates();
 
-            Console.WriteLine(" --- ");
-            foreach (Comunicates com in QueueSystem.comunicates)
-            {
-                Console.WriteLine(com.sComunicateContent);
-            }
-            Console.WriteLine(" --- ");
-
             if (QueueSystem.comunicates.Count > 0)
             {
                 // pobiera najwcześniejsze zdarzenie do obsługi
                 Comunicates first = QueueSystem.comunicates[0];
                 markComunicateAsUsed(0);
-
-                // jeśli w kolejce komunikatów nie istnieje komunikat typu IN -> wylosuj nowy czas przybycia kolejnego zdarzenia typu IN
-                //if (!checkComunicateINExists())
-                // generateINComunicate
 
                 return first;
             }
@@ -102,15 +91,15 @@ namespace Kolejki_LAB3.Model
                     break;
                 case "GET_FROM_QUEUE":
                     //sContent = "Zgłoszenie nr " + iCarId + " weszło z bufora na maszynę " + MachineName;
-                    sContent = "Z (" + iCarId + ") weszło z buf do " + MachineName;
+                    sContent = "Z (" + iCarId + ") weszło z bufora do " + MachineName;
                     break;
                 case "REMOVED_FROM_SYSTEM":
                     //sContent = "Zgłoszenie nr " + iCarId + " nie zostało obsłużone";
-                    sContent = "!! Z (" + iCarId + ") nie zostało obsłużone";
+                    sContent = "!! Z (" + iCarId + ") nie zostało obsłużone !!";
                     break;
                 case "SERVICE_PLACE_FINISHED":
                     // sContent = "Zgłoszenie nr " + iCarId + " wykonało się na maszynie " + MachineName;
-                    sContent = "Z (" + iCarId + ") finished na " + MachineName;
+                    sContent = "Z (" + iCarId + ") skończyło na " + MachineName;
                     break;
                 case "OUT":
                     // sContent = "Zgłoszenie nr " + iCarId + " wyszło z systemu";

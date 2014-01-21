@@ -586,7 +586,7 @@ namespace Kolejki_LAB3
         /// <returns></returns>
         public bool CheckFreePlaceInQueue(CarWash carwash)
         {
-            if (carwash.ListBox.Items.Count < ((carwash.QueueLength) - 1))
+            if (carwash.ListBox.Items.Count < (carwash.QueueLength))
                 return true;
 
             return false;
@@ -715,6 +715,9 @@ namespace Kolejki_LAB3
 
             // zwieksza licznik czasu spędzonego przez wszystkie auta w kolejce
             carWash.timeInQueueTotal = carWash.timeInQueueTotal + (time - car.iTimeInQueueStart);
+
+            // licznik sredniej dlugosci kolejki
+            carWash.MeanNumberOfApplicationInQueue += (carWash.ListBox.Items.Count + 1);
 
             // zeruje czas wejścia do kolejki danego auta
             car.iTimeInQueueStart = 0;

@@ -89,7 +89,7 @@ namespace Kolejki_LAB3.Model
                 return 0;
 
             // Średnia liczba samochodów obsłużonych w jednostce czasu. (Liczba aut obsłużonych / time total)
-            return (Convert.ToDecimal(carwash.numberOfCarsInQueueTotal) / Convert.ToDecimal(carwash.timeTotal));
+            return (Convert.ToDecimal(carwash.timeInQueueTotal) / Convert.ToDecimal(carwash.timeTotal));
 
         }
 
@@ -117,7 +117,8 @@ namespace Kolejki_LAB3.Model
                 return 0;
 
             // Średnia liczba samochodów obsłużonych w jednostce czasu. (Liczba aut obsłużonych / time total)
-            return 1 - (Convert.ToDecimal(carwash.numberOfSucceeded) / Convert.ToDecimal(carwash.numberOfCarsTotal));
+            //return 1 - (Convert.ToDecimal(carwash.numberOfSucceeded) / Convert.ToDecimal(carwash.numberOfCarsTotal));
+            return Convert.ToDecimal(carwash.numberOfSucceeded) / Convert.ToDecimal(carwash.timeTotal);
 
         }
         /*
