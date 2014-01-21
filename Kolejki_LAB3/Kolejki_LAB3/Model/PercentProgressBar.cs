@@ -17,12 +17,9 @@ namespace Kolejki_LAB3.Model
                             TextFormatFlags.SingleLine |
                             TextFormatFlags.WordEllipsis;
 
-                double percent = Math.Round(((double)this.Value / this.Maximum * 100), 2);
+                string stateName = Value != 0 ? "Trwa obsługa..." : "Odczekiwanie...";
 
-                if (percent <= 100)
-                {
-                    TextRenderer.DrawText(CreateGraphics(), percent + "%", Font, new Rectangle(0, 0, this.Width, this.Height), Color.Black, flags);
-                }
+                TextRenderer.DrawText(CreateGraphics(), stateName, Font, new Rectangle(0, 0, this.Width, this.Height), Color.Black, flags);
             }
         }
     }
